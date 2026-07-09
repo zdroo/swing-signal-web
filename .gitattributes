@@ -1,0 +1,11 @@
+# Normalize all text files to LF in the repository; working-tree checkout
+# uses each developer's platform default.
+* text=auto
+
+package-lock.json text eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
