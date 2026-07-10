@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { FAMILIES, INDICATORS, COMBOS, MOST_WATCHED, getIndicator } from "@/lib/indicators";
-import { ArrowRight, BookOpen, Layers, Star } from "lucide-react";
+import { AnchorExpander } from "@/components/AnchorExpander";
+import { ArrowRight, BookOpen, ChevronDown, Layers, Star } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Understanding Macro Indicators",
@@ -145,42 +146,61 @@ export default function IndicatorsPage() {
         </div>
       </nav>
 
-      {/* Indicators by family */}
+      {/* Opens the right collapsed section when a TOC anchor is followed */}
+      <AnchorExpander />
+
+      {/* Indicators by family — collapsed by default to keep the page scannable */}
       {FAMILIES.map((family) => {
         const members = INDICATORS.filter((i) => i.family === family);
         if (members.length === 0) return null;
 
         return (
-          <section key={family} className="mb-12">
-            <h2
-              id={family.replace(/[^a-zA-Z]+/g, "-")}
-              className="mb-4 scroll-mt-20 text-xl font-bold text-zinc-900 dark:text-white"
-            >
-              {family}
-            </h2>
-            <div className="space-y-4">
+          <details
+            key={family}
+            className="group mb-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 [&::-webkit-details-marker]:hidden">
+              <h2
+                id={family.replace(/[^a-zA-Z]+/g, "-")}
+                className="scroll-mt-20 text-xl font-bold text-zinc-900 dark:text-white"
+              >
+                {family}
+                <span className="ml-2 text-sm font-normal text-zinc-500">
+                  {members.length} indicator{members.length === 1 ? "" : "s"}
+                </span>
+              </h2>
+              <ChevronDown className="h-5 w-5 shrink-0 text-zinc-500 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="space-y-4 px-5 pb-5">
               {members.map((i) => (
                 <IndicatorEntry key={i.key} indicatorKey={i.key} />
               ))}
             </div>
-          </section>
+          </details>
         );
       })}
 
-      {/* Combinations */}
-      <section id="combinations" className="mb-12 scroll-mt-20">
-        <div className="mb-6 text-center">
-          <Layers className="mx-auto mb-3 h-7 w-7 text-emerald-600 dark:text-emerald-400" />
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
-            Reading Combinations
-          </h2>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-            No indicator means much alone. Regimes emerge from combinations — these are
-            the pairings that professional macro watchers actually read together.
-          </p>
-        </div>
+      {/* Combinations — also collapsible */}
+      <details
+        id="combinations"
+        className="group mb-12 mt-8 scroll-mt-20 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+      >
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 [&::-webkit-details-marker]:hidden">
+          <span className="flex items-center gap-3">
+            <Layers className="h-6 w-6 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+                Reading Combinations
+              </h2>
+              <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                No indicator means much alone — these are the pairings professionals read together.
+              </p>
+            </span>
+          </span>
+          <ChevronDown className="h-5 w-5 shrink-0 text-zinc-500 transition-transform group-open:rotate-180" />
+        </summary>
 
-        <div className="space-y-4">
+        <div className="space-y-4 px-5 pb-5">
           {COMBOS.map((combo) => (
             <article
               key={combo.title}
@@ -207,7 +227,7 @@ export default function IndicatorsPage() {
             </article>
           ))}
         </div>
-      </section>
+      </details>
 
       <div className="pb-8 text-center">
         <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">

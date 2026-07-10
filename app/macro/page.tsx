@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { MacroIndicatorCard } from "@/components/MacroIndicatorCard";
+import { RegimeSummary } from "@/components/RegimeSummary";
 import { signalSeverity, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
 import type { MacroRegimeDto } from "@/types";
 import { AlertCircle, ArrowLeft, BookOpen, Star } from "lucide-react";
@@ -112,6 +113,12 @@ export default async function MacroPage() {
           />
         ))}
       </div>
+
+      {/* What all of the above adds up to, in plain words */}
+      <RegimeSummary
+        indicators={regime.indicators}
+        title="Overall — What These Indicators Are Telling Us"
+      />
 
       <Link
         href="/indicators"
