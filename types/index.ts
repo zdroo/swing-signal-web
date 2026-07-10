@@ -1,11 +1,38 @@
+export type SignalTone = "good" | "neutral" | "caution" | "bad";
+
 export interface MacroIndicatorValueDto {
   value: number;
   signal: string;
   trend: string;
+  tone: SignalTone;
+  severity: number;
+  isMarketMover: boolean;
+}
+
+export interface HealthMemberDto {
+  key: string;
+  signal: string;
+  tone: SignalTone;
+}
+
+export interface HealthGroupDto {
+  name: string;
+  question: string;
+  score: number;
+  label: string;
+  members: HealthMemberDto[];
+}
+
+export interface MarketHealthDto {
+  score: number;
+  label: string;
+  groups: HealthGroupDto[];
 }
 
 export interface MacroRegimeDto {
   indicators: Record<string, MacroIndicatorValueDto>;
+  health: MarketHealthDto;
+  summary: string[];
   asOf: string;
 }
 

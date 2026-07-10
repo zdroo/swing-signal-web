@@ -1,19 +1,22 @@
 import { ScrollText } from "lucide-react";
-import { summarizeRegime } from "@/lib/regime-insight";
 import { MarketHealth } from "@/components/MarketHealth";
-import type { MacroIndicatorValueDto } from "@/types";
+import type { MarketHealthDto } from "@/types";
 
-// The rule-based synthesis of the current indicator signals: the visual
+// The backend-computed synthesis of the current indicator signals: the visual
 // composition (groups → market health score) plus the plain-words narrative.
 // Shared by the dashboard and /macro so the two never drift apart.
 export function RegimeSummary({
-  indicators,
+  health,
+  summary,
   title = "The Picture Right Now",
 }: {
-  indicators: Record<string, MacroIndicatorValueDto>;
+  health: MarketHealthDto;
+  summary: string[];
   title?: string;
 }) {
-  const summary = summarizeRegime(indicators);
+  // A cached pre-upgrade API response can briefly lack these fields right
+  // after a deploy — degrade to nothing rather than crash the page
+  if (!health?.groups || !summary) return null;
 
   return (
     <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
@@ -22,7 +25,7 @@ export function RegimeSummary({
         <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">{title}</h2>
       </div>
 
-      <MarketHealth indicators={indicators} />
+      <MarketHealth health={health} />
 
       <div className="mt-5 space-y-2">
         {summary.map((sentence, i) => (

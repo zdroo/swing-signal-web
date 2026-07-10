@@ -3,7 +3,6 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { MacroIndicatorCard } from "@/components/MacroIndicatorCard";
 import { RegimeSummary } from "@/components/RegimeSummary";
-import { signalSeverity, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
 import type { MacroRegimeDto } from "@/types";
 import { AlertCircle, ArrowLeft, BookOpen, Star } from "lucide-react";
 
@@ -66,15 +65,9 @@ export default async function MacroPage() {
   // Most market-moving readings first; family order breaks ties (stable sort)
   const indicators = INDICATOR_ORDER
     .filter((k) => k in regime.indicators)
-    .sort(
-      (a, b) =>
-        signalSeverity(regime.indicators[b].signal) -
-        signalSeverity(regime.indicators[a].signal)
-    );
+    .sort((a, b) => regime.indicators[b].severity - regime.indicators[a].severity);
 
-  const moverCount = indicators.filter(
-    (k) => signalSeverity(regime.indicators[k].signal) >= MARKET_MOVER_THRESHOLD
-  ).length;
+  const moverCount = indicators.filter((k) => regime.indicators[k].isMarketMover).length;
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8">
@@ -116,7 +109,8 @@ export default async function MacroPage() {
 
       {/* What all of the above adds up to, in plain words */}
       <RegimeSummary
-        indicators={regime.indicators}
+        health={regime.health}
+        summary={regime.summary}
         title="Overall — What These Indicators Are Telling Us"
       />
 

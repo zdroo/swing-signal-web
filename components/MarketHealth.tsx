@@ -1,6 +1,5 @@
-import { computeMarketHealth, type SignalTone } from "@/lib/regime-insight";
 import { getIndicator } from "@/lib/indicators";
-import type { MacroIndicatorValueDto } from "@/types";
+import type { MarketHealthDto, SignalTone } from "@/types";
 import { ArrowDown } from "lucide-react";
 
 // Visual composition of the regime: indicator chips → thematic group meters
@@ -39,12 +38,7 @@ function Meter({ score }: { score: number }) {
   );
 }
 
-export function MarketHealth({
-  indicators,
-}: {
-  indicators: Record<string, MacroIndicatorValueDto>;
-}) {
-  const health = computeMarketHealth(indicators);
+export function MarketHealth({ health }: { health: MarketHealthDto }) {
   if (health.groups.length === 0) return null;
 
   return (

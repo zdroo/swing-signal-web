@@ -11,7 +11,6 @@ import { AssetSearch } from "@/components/AssetSearch";
 import { InfoTip } from "@/components/InfoTip";
 import { PopularAssets } from "@/components/PopularAssets";
 import { ProWaitlist } from "@/components/ProWaitlist";
-import { signalSeverity, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
 import type { MacroRegimeDto } from "@/types";
 import { AlertCircle } from "lucide-react";
 import { LiveMacroCta } from "@/components/LiveMacroCta";
@@ -51,9 +50,7 @@ export default async function DashboardPage() {
 
   const readings = Object.values(macroRegime.indicators);
   const indicatorCount = readings.length;
-  const moverCount = readings.filter(
-    (r) => signalSeverity(r.signal) >= MARKET_MOVER_THRESHOLD
-  ).length;
+  const moverCount = readings.filter((r) => r.isMarketMover).length;
 
   return (
     <div className="mx-auto max-w-7xl space-y-10 px-4 py-8">
@@ -156,7 +153,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Regime summary — the picture in plain words */}
-      <RegimeSummary indicators={macroRegime.indicators} />
+      <RegimeSummary health={macroRegime.health} summary={macroRegime.summary} />
     </div>
   );
 }

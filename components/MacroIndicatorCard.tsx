@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { MacroIndicatorValueDto } from "@/types";
 import { getIndicator } from "@/lib/indicators";
-import { signalSeverity, signalTag, signalTone, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
+import { signalTag } from "@/lib/regime-insight";
 import { TrendingUp, TrendingDown, Minus, Star } from "lucide-react";
 
 // Estimated tooltip footprint used to decide placement before it's visible
@@ -49,10 +49,10 @@ export function MacroIndicatorCard({ indicatorKey, data }: Props) {
   }, [open]);
 
   const info = getIndicator(indicatorKey);
-  const colorClass = TONE_CLASSES[signalTone(data.signal)];
+  const colorClass = TONE_CLASSES[data.tone];
   const label = info?.name ?? indicatorKey;
   const unit = info?.unit ?? "";
-  const isMover = signalSeverity(data.signal) >= MARKET_MOVER_THRESHOLD;
+  const isMover = data.isMarketMover;
   const tag = signalTag(indicatorKey, data.signal);
 
   // Decide tooltip placement from the card's position in the viewport,

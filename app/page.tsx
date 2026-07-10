@@ -9,7 +9,6 @@ import { LiveMacroCta } from "@/components/LiveMacroCta";
 import { MacroIndicatorCard } from "@/components/MacroIndicatorCard";
 import { PopularAssets } from "@/components/PopularAssets";
 import { ProWaitlist } from "@/components/ProWaitlist";
-import { signalSeverity, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
 import type { AssetOddsDto, MacroRegimeDto } from "@/types";
 import {
   ArrowRight,
@@ -90,9 +89,7 @@ export default async function LandingPage() {
     : [];
 
   const readings = macroRegime ? Object.values(macroRegime.indicators) : [];
-  const moverCount = readings.filter(
-    (r) => signalSeverity(r.signal) >= MARKET_MOVER_THRESHOLD
-  ).length;
+  const moverCount = readings.filter((r) => r.isMarketMover).length;
 
   return (
     <div className="mx-auto max-w-6xl px-4">
