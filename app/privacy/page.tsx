@@ -60,12 +60,27 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
-            Service providers
+            Why we may process it (legal bases)
+          </h2>
+          <p>
+            We process account and usage data to provide the service you signed up for
+            (performance of a contract), analytics and product-demand data in our legitimate
+            interest of improving the product, and the Pro waitlist on the basis of your consent —
+            which you can withdraw at any time by asking to be removed.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
+            Service providers &amp; international transfers
           </h2>
           <p>
             We use a small number of processors to run the service: a transactional email provider
             (Resend) to send confirmation and password-reset emails, and hosting infrastructure for
             the application and database. These providers process data only on our instructions.
+            Some providers are based in the United States; where personal data leaves the EEA, the
+            transfer is covered by the provider&apos;s Standard Contractual Clauses or an adequacy
+            decision.
           </p>
         </section>
 
@@ -76,9 +91,14 @@ export default function PrivacyPage() {
           <ul className="list-disc space-y-1.5 pl-5">
             <li>Accounts that never confirm their email are automatically deleted after 7 days.</li>
             <li>
-              Under the GDPR you can request access to, correction of, or deletion of your personal
-              data at any time. Deleting your account removes your email and personal data from our
+              Under the GDPR you can request access to, correction of, deletion of, or a portable
+              copy of your personal data, and you can object to processing based on legitimate
+              interest. Deleting your account removes your email and personal data from our
               systems.
+            </li>
+            <li>
+              You also have the right to lodge a complaint with your local data protection
+              authority.
             </li>
             <li>
               Session tokens are stored in your browser&apos;s local storage and can be cleared by

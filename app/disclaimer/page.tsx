@@ -65,10 +65,50 @@ export default function DisclaimerPage() {
             Data accuracy
           </h2>
           <p>
-            Market and macroeconomic data is sourced from third parties (FRED, exchange APIs, and
-            other public providers) and may be delayed, revised, or occasionally wrong. We make no
-            warranty as to the accuracy, completeness, or timeliness of any data shown.
+            Market and macroeconomic data is sourced from third parties and may be delayed,
+            revised, or occasionally wrong. We make no warranty as to the accuracy, completeness,
+            or timeliness of any data shown.
           </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
+            Data sources &amp; attribution
+          </h2>
+          <ul className="list-disc space-y-1.5 pl-5">
+            <li>
+              Macroeconomic series are retrieved via the FRED® API of the Federal Reserve Bank of
+              St. Louis and via DBnomics. <strong>This product uses the FRED® API but is not
+              endorsed or certified by the Federal Reserve Bank of St. Louis.</strong>
+            </li>
+            <li>
+              Cryptocurrency market data comes from the Binance public API; pre-2017 Bitcoin
+              history and stablecoin supply from the{" "}
+              <a href="https://coinmetrics.io/community-network-data/" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                Coin Metrics Community
+              </a>{" "}
+              dataset (CC BY-NC 4.0).
+            </li>
+            <li>
+              Stock, ETF, forex and commodity prices come from publicly available Yahoo Finance
+              endpoints.
+            </li>
+            <li>
+              On-chain Bitcoin metrics from{" "}
+              <a href="https://www.blockchain.com/explorer/charts" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                Blockchain.com
+              </a>{" "}
+              and{" "}
+              <a href="https://bitcoin-data.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                bitcoin-data.com
+              </a>
+              ; the Crypto Fear &amp; Greed Index from{" "}
+              <a href="https://alternative.me/crypto/fear-and-greed-index/" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                alternative.me
+              </a>
+              .
+            </li>
+          </ul>
         </section>
       </div>
 

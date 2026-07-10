@@ -81,11 +81,34 @@ export default function TermsPage() {
 
         <section>
           <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
-            6. Changes
+            6. Eligibility
+          </h2>
+          <p>
+            The service is intended for adults. You must be at least 18 years old (or the age of
+            majority in your jurisdiction) to create an account.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
+            7. Governing law
+          </h2>
+          <p>
+            These terms are governed by the laws of Romania and applicable European Union law.
+            Nothing in these terms limits mandatory consumer protections that apply in your
+            country of residence.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
+            8. Changes &amp; contact
           </h2>
           <p>
             We may update these terms as the product evolves. Material changes will be announced on
-            the site. Continued use after changes constitutes acceptance. Last updated: July 2026.
+            the site. Continued use after changes constitutes acceptance. Questions about these
+            terms: <a href="mailto:legal@swingsignal.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">legal@swingsignal.app</a>.
+            Last updated: July 2026.
           </p>
         </section>
       </div>
