@@ -8,7 +8,7 @@ import type { MarketHealthDto } from "@/types";
 export function RegimeSummary({
   health,
   summary,
-  title = "The Picture Right Now",
+  title = "Current Market Conditions",
 }: {
   health: MarketHealthDto;
   summary: string[];
