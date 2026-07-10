@@ -29,6 +29,23 @@ export interface MarketHealthDto {
   groups: HealthGroupDto[];
 }
 
+export interface WatchlistItemDto {
+  symbol: string;
+  name: string;
+  addedAt: string;
+}
+
+export interface WatchlistRowDto {
+  symbol: string;
+  name: string;
+  currentPrice: number | null;
+  odds3M: number | null;
+  baseRate3M: number | null;
+  edge3M: number | null;
+  tradeRead: TradeReadDto | null;
+  addedAt: string;
+}
+
 export type PlaybookVerdict = "Favored" | "Neutral" | "Headwinds";
 
 export interface PlaybookAssetDto {

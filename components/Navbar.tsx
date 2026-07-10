@@ -6,8 +6,11 @@ import { usePathname } from "next/navigation";
 import { Menu, TrendingUp, X } from "lucide-react";
 import { UserMenu } from "@/components/UserMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/context/AuthContext";
+import { PRO_ENABLED } from "@/lib/features";
 
-// Journey order: act (Dashboard) → watch (Live Macro) → learn → look up
+// Journey order: act (Dashboard) → track (Watchlist) → watch (Live Macro)
+// → learn → look up
 const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/macro", label: "Live Macro" },
@@ -19,6 +22,13 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  // Watchlist is Pro: while the dark-launch flag is off only Pro accounts
+  // see the tab at all; once Pro is live everyone does (Free gets the pitch)
+  const links = user?.plan === "Pro" || PRO_ENABLED
+    ? [LINKS[0], { href: "/watchlist", label: "Watchlist" }, ...LINKS.slice(1)]
+    : LINKS;
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -56,7 +66,7 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
           {/* Desktop links — the current page wears a pill */}
           <div className="hidden items-center gap-1 sm:flex">
-            {LINKS.map((item) => (
+            {links.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -91,7 +101,7 @@ export function Navbar() {
       {/* Mobile menu panel */}
       {open && (
         <div className="border-t border-zinc-200 dark:border-zinc-800 px-4 py-2 sm:hidden">
-          {LINKS.map((item) => (
+          {links.map((item) => (
             <Link
               key={item.href}
               href={item.href}

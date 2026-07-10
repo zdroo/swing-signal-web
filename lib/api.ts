@@ -11,6 +11,8 @@ import type {
   PopularAssetDto,
   SymbolSearchResultDto,
   UserProfileDto,
+  WatchlistItemDto,
+  WatchlistRowDto,
 } from "@/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://localhost:7260";
@@ -68,6 +70,18 @@ async function send<T>(method: string, path: string, body?: unknown): Promise<T>
 const post = <T,>(path: string, body: unknown): Promise<T> => send<T>("POST", path, body);
 const put = <T,>(path: string, body: unknown): Promise<T> => send<T>("PUT", path, body);
 const del = <T,>(path: string): Promise<T> => send<T>("DELETE", path);
+
+// For endpoints answering 204 — send() would choke parsing the empty body
+async function delVoid(path: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new ApiError(res.status, extractMessage(text) || `API error ${res.status}`);
+  }
+}
 
 export const api = {
   getCurrentRegime: (): Promise<MacroRegimeDto> =>
@@ -140,4 +154,16 @@ export const api = {
 
   deleteAccount: (): Promise<{ message: string }> =>
     del("/api/users/me"),
+
+  getWatchlist: (): Promise<WatchlistItemDto[]> =>
+    get("/api/watchlist"),
+
+  getWatchlistOverview: (): Promise<WatchlistRowDto[]> =>
+    get("/api/watchlist/overview"),
+
+  addToWatchlist: (symbol: string): Promise<WatchlistItemDto> =>
+    post("/api/watchlist", { symbol }),
+
+  removeFromWatchlist: (symbol: string): Promise<void> =>
+    delVoid(`/api/watchlist/${encodeURIComponent(symbol)}`),
 };
