@@ -60,6 +60,28 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
+            Cookies &amp; local storage
+          </h2>
+          <p>
+            SwingSignal sets <strong>no cookies of its own</strong> — no tracking cookies, no
+            advertising cookies, which is why there is no cookie banner. We use your
+            browser&apos;s local storage for two strictly necessary purposes: keeping you signed
+            in (session tokens, removed on logout) and remembering your light/dark theme choice.
+            Our analytics tool is cookie-free.
+          </p>
+          <p className="mt-2">
+            The one third party involved is Google: if you visit the sign-in page and choose
+            &quot;Sign in with Google&quot;, Google&apos;s sign-in component loads there — and only
+            there — and may use Google&apos;s own cookies, governed by{" "}
+            <a href="https://policies.google.com/privacy" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+              Google&apos;s privacy policy
+            </a>
+            . No Google scripts load anywhere else on the site.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">
             Why we may process it (legal bases)
           </h2>
           <p>

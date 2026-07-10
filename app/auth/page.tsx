@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
+import { GoogleProvider } from "@/components/GoogleProvider";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/lib/api";
 import { TrendingUp, Loader2 } from "lucide-react";
@@ -152,8 +153,10 @@ function AuthForm() {
 
 export default function AuthPage() {
   return (
-    <Suspense>
-      <AuthForm />
-    </Suspense>
+    <GoogleProvider>
+      <Suspense>
+        <AuthForm />
+      </Suspense>
+    </GoogleProvider>
   );
 }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { AnalyticsScript } from "@/components/AnalyticsScript";
-import { GoogleProvider } from "@/components/GoogleProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
@@ -94,22 +93,22 @@ export default function RootLayout({
         <AnalyticsScript />
       </head>
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-        <GoogleProvider>
-          <AuthProvider>
-            <ThemeProvider>
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <footer className="border-t border-zinc-200 py-4 text-center text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-600">
-                <p>Historical data only. Not financial advice.</p>
-                <p className="mt-1.5 space-x-3">
-                  <a href="/disclaimer" className="hover:text-zinc-700 dark:hover:text-zinc-400">Disclaimer</a>
-                  <a href="/terms" className="hover:text-zinc-700 dark:hover:text-zinc-400">Terms</a>
-                  <a href="/privacy" className="hover:text-zinc-700 dark:hover:text-zinc-400">Privacy</a>
-                </p>
-              </footer>
-            </ThemeProvider>
-          </AuthProvider>
-        </GoogleProvider>
+        {/* Google's sign-in script is scoped to /auth (see GoogleProvider there)
+            so no third-party storage is touched before the user seeks sign-in */}
+        <AuthProvider>
+          <ThemeProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <footer className="border-t border-zinc-200 py-4 text-center text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-600">
+              <p>Historical data only. Not financial advice.</p>
+              <p className="mt-1.5 space-x-3">
+                <a href="/disclaimer" className="hover:text-zinc-700 dark:hover:text-zinc-400">Disclaimer</a>
+                <a href="/terms" className="hover:text-zinc-700 dark:hover:text-zinc-400">Terms</a>
+                <a href="/privacy" className="hover:text-zinc-700 dark:hover:text-zinc-400">Privacy</a>
+              </p>
+            </footer>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
