@@ -14,7 +14,7 @@ import { ProWaitlist } from "@/components/ProWaitlist";
 import type { MacroRegimeDto } from "@/types";
 import { AlertCircle } from "lucide-react";
 import { LiveMacroCta } from "@/components/LiveMacroCta";
-import { RegimeSummary } from "@/components/RegimeSummary";
+import { ConditionsStrip } from "@/components/ConditionsStrip";
 
 async function getPageData() {
   try {
@@ -70,6 +70,13 @@ export default async function DashboardPage() {
       <div className="mx-auto max-w-2xl">
         <ProWaitlist source="dashboard" />
       </div>
+
+      {/* The five-second takeaway; the full derivation lives on /macro */}
+      <ConditionsStrip
+        health={macroRegime.health}
+        playbook={macroRegime.playbook}
+        summary={macroRegime.summary}
+      />
 
       {/* Asset search — the primary action, front and center */}
       <section className="rounded-2xl border border-emerald-500/30 bg-white dark:bg-zinc-900 p-6">
@@ -151,13 +158,6 @@ export default async function DashboardPage() {
           </div>
         </section>
       )}
-
-      {/* Regime summary — the picture in plain words */}
-      <RegimeSummary
-        health={macroRegime.health}
-        summary={macroRegime.summary}
-        playbook={macroRegime.playbook}
-      />
     </div>
   );
 }

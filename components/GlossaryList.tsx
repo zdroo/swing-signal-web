@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { GLOSSARY, GLOSSARY_THEMES } from "@/lib/glossary";
-import { Search, Lightbulb } from "lucide-react";
+import { Search, Lightbulb, ChevronDown } from "lucide-react";
 
 export function GlossaryList() {
   const [query, setQuery] = useState("");
@@ -37,18 +37,32 @@ export function GlossaryList() {
         </p>
       )}
 
+      {/* Collapsed by default to keep the page scannable; a search forces
+          matching themes open so results are never hidden */}
       {GLOSSARY_THEMES.map((theme) => {
         const terms = filtered.filter((t) => t.theme === theme);
         if (terms.length === 0) return null;
 
         return (
-          <section key={theme} className="mb-10">
-            <h2 className="mb-4 text-xl font-bold text-zinc-900 dark:text-white">{theme}</h2>
-            <div className="space-y-3">
+          <details
+            key={theme}
+            open={query.trim() !== "" || undefined}
+            className="group mb-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 [&::-webkit-details-marker]:hidden">
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+                {theme}
+                <span className="ml-2 text-sm font-normal text-zinc-500">
+                  {terms.length} term{terms.length === 1 ? "" : "s"}
+                </span>
+              </h2>
+              <ChevronDown className="h-5 w-5 shrink-0 text-zinc-500 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="space-y-3 px-5 pb-5">
               {terms.map((t) => (
                 <article
                   key={t.term}
-                  className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5"
+                  className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 p-5"
                 >
                   <h3 className="font-semibold text-zinc-900 dark:text-white">{t.term}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
@@ -63,7 +77,7 @@ export function GlossaryList() {
                 </article>
               ))}
             </div>
-          </section>
+          </details>
         );
       })}
     </div>
