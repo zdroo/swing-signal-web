@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { MacroIndicatorValueDto } from "@/types";
 import { getIndicator } from "@/lib/indicators";
-import { signalSeverity, signalTag, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
+import { signalSeverity, signalTag, signalTone, MARKET_MOVER_THRESHOLD } from "@/lib/regime-insight";
 import { TrendingUp, TrendingDown, Minus, Star } from "lucide-react";
 
 // Estimated tooltip footprint used to decide placement before it's visible
@@ -13,62 +13,13 @@ const TOOLTIP_WIDTH = 288; // w-72
 const VIEWPORT_MARGIN = 8;
 const NAVBAR_HEIGHT = 56;
 
-const GREEN = "text-emerald-600 dark:text-emerald-400 bg-emerald-400/10 border-emerald-400/30";
-const RED   = "text-red-600 dark:text-red-400 bg-red-400/10 border-red-400/30";
-const AMBER = "text-amber-600 dark:text-amber-400 bg-amber-400/10 border-amber-400/30";
-const GRAY  = "text-zinc-600 dark:text-zinc-400 bg-zinc-400/10 border-zinc-400/30";
-
-const SIGNAL_COLORS: Record<string, string> = {
-  // bullish / healthy
-  Accommodative: GREEN,
-  Healthy: GREEN,
-  Low: GREEN,
-  Normal: GRAY,
-  Expanding: GREEN,
-  "QE (Expanding)": GREEN,
-  "Negative (Easy)": GREEN,
-  "On Target": GREEN,
-  Strong: GREEN,
-  Calm: GREEN,
-  "No Signal": GREEN,
-  "Growth Signal": GREEN,
-  Optimistic: GREEN,
-  "Risk-on": GREEN,
-  "Weak USD": GREEN,
-
-  // bearish / stressed
-  Restrictive: RED,
-  Inverted: RED,
-  Contracting: RED,
-  "QT (Contracting)": RED,
-  "Contraction Signal": RED,
-  Stressed: RED,
-  "Recession Signal": RED,
-  Panic: RED,
-  Pessimistic: RED,
-  Falling: RED,
-  "Risk-off": RED,
-  "Strong USD": RED,
-  "Extreme Greed": RED,
-
-  // caution
-  Elevated: AMBER,
-  High: AMBER,
-  Flat: AMBER,
-  Warning: AMBER,
-  "Above Target": AMBER,
-  Slow: AMBER,
-  Inflationary: AMBER,
-  Complacent: AMBER,
-  Greed: AMBER,
-  Fear: AMBER,
-  "Extreme Fear": GREEN, // contrarian: extreme fear has historically been a buy zone
-
-  // neutral
-  Neutral: GRAY,
-  Stable: GRAY,
-  Moderate: GRAY,
-  Deflationary: GRAY,
+// Visuals keyed by the shared tone semantics in lib/regime-insight — the
+// cards and the market-health composite can never disagree on direction
+const TONE_CLASSES: Record<string, string> = {
+  good:    "text-emerald-600 dark:text-emerald-400 bg-emerald-400/10 border-emerald-400/30",
+  bad:     "text-red-600 dark:text-red-400 bg-red-400/10 border-red-400/30",
+  caution: "text-amber-600 dark:text-amber-400 bg-amber-400/10 border-amber-400/30",
+  neutral: "text-zinc-600 dark:text-zinc-400 bg-zinc-400/10 border-zinc-400/30",
 };
 
 interface Props {
@@ -98,7 +49,7 @@ export function MacroIndicatorCard({ indicatorKey, data }: Props) {
   }, [open]);
 
   const info = getIndicator(indicatorKey);
-  const colorClass = SIGNAL_COLORS[data.signal] ?? GRAY;
+  const colorClass = TONE_CLASSES[signalTone(data.signal)];
   const label = info?.name ?? indicatorKey;
   const unit = info?.unit ?? "";
   const isMover = signalSeverity(data.signal) >= MARKET_MOVER_THRESHOLD;

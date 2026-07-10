@@ -67,6 +67,69 @@ export function signalSeverity(signal: string): number {
 /** Severity at or above this shows the "market mover" star. */
 export const MARKET_MOVER_THRESHOLD = 2;
 
+// ── Tone: is this reading supportive or hostile for the economy/markets? ──
+// The single source of the good/caution/bad semantics — indicator cards and
+// the market-health composite both consume this, so they can never disagree.
+export type SignalTone = "good" | "neutral" | "caution" | "bad";
+
+const SIGNAL_TONE: Record<string, SignalTone> = {
+  // supportive
+  Accommodative: "good",
+  Healthy: "good",
+  Low: "good",
+  Expanding: "good",
+  "Expanding Fast": "good",
+  "QE (Expanding)": "good",
+  "Negative (Easy)": "good",
+  "On Target": "good",
+  Strong: "good",
+  Calm: "good",
+  "No Signal": "good",
+  "Growth Signal": "good",
+  Optimistic: "good",
+  "Risk-on": "good",
+  "Weak USD": "good",
+  "Extreme Fear": "good", // contrarian: historically a buy zone
+
+  // hostile
+  Restrictive: "bad",
+  Inverted: "bad",
+  Contracting: "bad",
+  "QT (Contracting)": "bad",
+  "Contraction Signal": "bad",
+  Stressed: "bad",
+  "Recession Signal": "bad",
+  Panic: "bad",
+  Pessimistic: "bad",
+  Falling: "bad",
+  "Risk-off": "bad",
+  "Strong USD": "bad",
+  "Extreme Greed": "bad",
+
+  // caution
+  Elevated: "caution",
+  High: "caution",
+  Flat: "caution",
+  Warning: "caution",
+  "Above Target": "caution",
+  Slow: "caution",
+  Inflationary: "caution",
+  Complacent: "caution",
+  Greed: "caution",
+  Fear: "caution",
+
+  // neutral
+  Neutral: "neutral",
+  Normal: "neutral",
+  Stable: "neutral",
+  Moderate: "neutral",
+  Deflationary: "neutral",
+};
+
+export function signalTone(signal: string): SignalTone {
+  return SIGNAL_TONE[signal] ?? "neutral";
+}
+
 // ── Plain-language tags: 2-3 words per reading ───────────────────────────
 // Generic per signal, with per-indicator overrides where the same label
 // means different things (e.g. "High" yields vs "High" reverse repo).
@@ -131,8 +194,109 @@ export function signalTag(indicatorKey: string, signal: string): string | null {
   return GENERIC_TAGS[signal] ?? null;
 }
 
-// ── Regime summary: a few sentences on the overall picture ───────────────
+// ── Market health: a descriptive composite of today's signal states ──────
+// Indicators combine into thematic groups, each group scores 0–100 from its
+// members' tones, and the groups average (equal weight — the same family-
+// weighting idea the matching engine uses) into one headline number. This
+// SUMMARIZES the dashboard; it is not a prediction and plays no role in the
+// odds engine.
 type Indicators = Record<string, MacroIndicatorValueDto>;
+
+const TONE_SCORE: Record<SignalTone, number> = {
+  good: 100,
+  neutral: 55, // "nothing notable" is mildly healthy, not mid-crisis
+  caution: 30,
+  bad: 0,
+};
+
+const HEALTH_GROUPS: { name: string; question: string; keys: string[] }[] = [
+  {
+    name: "Policy & Liquidity",
+    question: "Is money cheap and flowing, or expensive and draining?",
+    keys: ["FedFundsRate", "FedBalanceSheet", "M2MoneySupply", "ReverseRepo", "RealYield10Y"],
+  },
+  {
+    name: "Rates & Yield Curve",
+    question: "What does the bond market expect — growth or recession?",
+    keys: ["TreasuryYield10Y", "TreasuryYield2Y", "TreasuryYield3M", "YieldCurveSpread", "YieldSpread10Y3M"],
+  },
+  {
+    name: "Inflation",
+    question: "Is inflation forcing the Fed's hand?",
+    keys: ["CPI", "CorePCE"],
+  },
+  {
+    name: "Growth & Labor",
+    question: "Is the real economy expanding and employing?",
+    keys: ["GDP", "UnemploymentRate", "JoblessClaims", "SahmRule", "RetailSales", "HousingStarts", "ConsumerSentiment"],
+  },
+  {
+    name: "Market Stress",
+    question: "Are markets calm or bracing for trouble?",
+    keys: ["VIX", "HighYieldSpread", "DollarIndex", "CryptoFearGreed"],
+  },
+  {
+    name: "Commodities",
+    question: "What do raw materials say about demand and fear?",
+    keys: ["GoldPrice", "OilWTI", "Copper"],
+  },
+];
+
+export function healthLabel(score: number): string {
+  if (score >= 70) return "Supportive";
+  if (score >= 55) return "Steady";
+  if (score >= 40) return "Mixed";
+  if (score >= 25) return "Strained";
+  return "Stressed";
+}
+
+export interface HealthMember {
+  key: string;
+  signal: string;
+  tone: SignalTone;
+}
+
+export interface HealthGroup {
+  name: string;
+  question: string;
+  score: number;
+  label: string;
+  members: HealthMember[];
+}
+
+export interface MarketHealth {
+  score: number;
+  label: string;
+  groups: HealthGroup[];
+}
+
+export function computeMarketHealth(indicators: Indicators): MarketHealth {
+  const groups: HealthGroup[] = [];
+
+  for (const group of HEALTH_GROUPS) {
+    const members: HealthMember[] = group.keys
+      .filter((key) => key in indicators)
+      .map((key) => ({
+        key,
+        signal: indicators[key].signal,
+        tone: signalTone(indicators[key].signal),
+      }));
+
+    if (members.length === 0) continue;
+
+    const score = Math.round(
+      members.reduce((sum, m) => sum + TONE_SCORE[m.tone], 0) / members.length
+    );
+    groups.push({ name: group.name, question: group.question, score, label: healthLabel(score), members });
+  }
+
+  const score =
+    groups.length === 0
+      ? 0
+      : Math.round(groups.reduce((sum, g) => sum + g.score, 0) / groups.length);
+
+  return { score, label: healthLabel(score), groups };
+}
 
 function sig(indicators: Indicators, key: string): string | null {
   return indicators[key]?.signal ?? null;
