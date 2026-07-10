@@ -38,6 +38,16 @@ export interface PlaybookAssetDto {
   reasons: string[];
 }
 
+export type TradeStance = "Long bias" | "No edge" | "Stand aside";
+
+export interface TradeReadDto {
+  stance: TradeStance;
+  horizonDays: number;
+  strength: "Strong" | "Moderate" | "Weak";
+  reasons: string[];
+  note: string;
+}
+
 export interface PlaybookDto {
   headline: string;
   note: string;
@@ -101,6 +111,7 @@ export interface AssetOddsDto {
   explanations: string[];
   disclaimer: string;
   breakdown: AnalogBreakdownDto | null;
+  tradeRead: TradeReadDto | null;
 }
 
 export interface AssetPeriodOddsDto {

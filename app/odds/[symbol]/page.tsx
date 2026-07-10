@@ -12,6 +12,7 @@ import { PeriodPredictor } from "@/components/PeriodPredictor";
 import { AnalogContext } from "@/components/AnalogContext";
 import { BacktestPanel } from "@/components/BacktestPanel";
 import { PriceChart } from "@/components/PriceChart";
+import { TradeReadCard } from "@/components/TradeReadCard";
 import { ProWaitlist } from "@/components/ProWaitlist";
 import { InfoTip } from "@/components/InfoTip";
 import { AlertCircle, ArrowLeft, Info, Loader2, Lock } from "lucide-react";
@@ -231,6 +232,9 @@ export default function OddsPage() {
               </div>
             )}
           </div>
+
+          {/* The takeaway first: what the analog statistics support right now */}
+          {odds.tradeRead && <TradeReadCard read={odds.tradeRead} />}
 
           <PriceChart
             symbol={odds.symbol}
