@@ -1,8 +1,8 @@
 import type { AssetOddsDto, OddsForPeriodDto } from "@/types";
-import { Info } from "lucide-react";
+import { InfoTip } from "@/components/InfoTip";
 
-// Plain-language definitions shown as native tooltips (they survive the
-// table's horizontal-scroll container, where hover balloons would clip)
+// Plain-language definitions for every metric row. InfoTip positions its
+// balloon fixed, so they survive the horizontal-scroll container.
 const METRIC_INFO: Record<string, string> = {
   "Positive Odds":
     "The chance this asset ends higher over this window, based on what happened after similar past macro periods. Closer matches count more, and the number is pulled toward the Base Rate so a few analogs can't produce extreme claims.",
@@ -60,13 +60,12 @@ function OverallCell({ d }: { d: OddsForPeriodDto }) {
 function MetricLabel({ label, emphasized = false }: { label: string; emphasized?: boolean }) {
   return (
     <span
-      title={METRIC_INFO[label]}
-      className={`inline-flex cursor-help items-center gap-1.5 ${
+      className={`inline-flex items-center gap-1.5 ${
         emphasized ? "font-medium text-zinc-700 dark:text-zinc-300" : "text-zinc-600 dark:text-zinc-400"
       }`}
     >
       {label}
-      <Info className="h-3 w-3 shrink-0 text-zinc-400 dark:text-zinc-500" />
+      <InfoTip align="left">{METRIC_INFO[label]}</InfoTip>
     </span>
   );
 }

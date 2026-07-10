@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
+import { InfoTip } from "@/components/InfoTip";
 import type { AssetPeriodOddsDto } from "@/types";
 import { Loader2, AlertCircle, Lock } from "lucide-react";
 
@@ -171,21 +172,33 @@ export function PeriodPredictor({ symbol }: { symbol: string }) {
               chance {symbol} is higher in {periodLabel(days)}
             </span>
             {odds.baseRate !== null && (
-              <span
-                title={`${symbol} was higher after ${periodLabel(days)} in ${odds.baseRate.toFixed(0)}% of ALL historical periods — the base rate. The current macro regime ${Math.abs(odds.edge) <= 1 ? "does not meaningfully shift" : odds.edge > 0 ? "improves" : "worsens"} those odds.`}
-                className={`cursor-help rounded-md border px-2 py-0.5 text-xs font-medium ${
-                  odds.edge > 1
-                    ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-600 dark:text-emerald-400"
-                    : odds.edge < -1
-                    ? "border-red-400/30 bg-red-400/10 text-red-600 dark:text-red-400"
-                    : "border-zinc-400 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
-                }`}
+              <InfoTip
+                trigger={
+                  <span
+                    className={`cursor-help rounded-md border px-2 py-0.5 text-xs font-medium ${
+                      odds.edge > 1
+                        ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-600 dark:text-emerald-400"
+                        : odds.edge < -1
+                        ? "border-red-400/30 bg-red-400/10 text-red-600 dark:text-red-400"
+                        : "border-zinc-400 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                    }`}
+                  >
+                    {odds.edge >= 0 ? "+" : ""}{odds.edge.toFixed(1)}pp vs base rate
+                  </span>
+                }
               >
-                {odds.edge >= 0 ? "+" : ""}{odds.edge.toFixed(1)}pp vs base rate
-              </span>
+                {symbol} was higher after {periodLabel(days)} in {odds.baseRate.toFixed(0)}% of
+                ALL historical periods — the base rate. The current macro regime{" "}
+                {Math.abs(odds.edge) <= 1
+                  ? "does not meaningfully shift"
+                  : odds.edge > 0
+                  ? "improves"
+                  : "worsens"}{" "}
+                those odds.
+              </InfoTip>
             )}
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Target
               label="Conservative (P25)"
               price={odds.priceTargetLow}

@@ -78,7 +78,7 @@ function PeriodTargets({
           )}
         </span>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <PriceTargetCard label="Conservative (P25)" price={period.priceTargetLow} currentPrice={currentPrice} symbol={symbol} />
         <PriceTargetCard label="Base Case (P50)" price={period.priceTargetMid} currentPrice={currentPrice} symbol={symbol} />
         <PriceTargetCard label="Optimistic (P75)" price={period.priceTargetHigh} currentPrice={currentPrice} symbol={symbol} />
@@ -202,34 +202,31 @@ export default function OddsPage() {
                 <div className="text-2xl font-bold text-zinc-900 dark:text-white tabular-nums">
                   {odds.currentPrice !== null ? formatPrice(odds.currentPrice, symbol) : "—"}
                 </div>
-                <div className="group relative mt-0.5 flex items-center justify-end gap-1 text-xs text-zinc-500">
+                <div className="mt-0.5 flex items-center justify-end gap-1 text-xs text-zinc-500">
                   <span>Based on {odds.matchesUsed} historical macro periods</span>
-                  <Info className="h-3 w-3 cursor-help" />
-                  {/* What "historical macro periods" actually means */}
-                  <div className="pointer-events-none absolute right-0 top-full z-30 mt-1.5 w-80 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 text-left opacity-0 shadow-xl transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
-                    <p className="text-xs font-semibold text-zinc-900 dark:text-white">
+                  <InfoTip align="right">
+                    <p className="font-semibold text-zinc-900 dark:text-white">
                       What are &quot;historical macro periods&quot;?
                     </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+                    <p className="mt-1.5">
                       Every month since 1990 gets a fingerprint of 26 macro indicators (Fed policy,
                       yield curve, inflation, credit stress...). We pick the {odds.matchesUsed} months
                       whose fingerprints most resemble today&apos;s — deduplicated so one crisis
                       can&apos;t fill the list — and weight them by closeness.
                     </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+                    <p className="mt-1.5">
                       The odds on this page are simply what {odds.symbol} did in the weeks and months
                       after those moments. The matching uses <span className="font-medium">macro conditions
                       only</span> — not the asset&apos;s own chart — so check the &quot;Same Macro,
                       Different Price Situations&quot; box below for how the asset&apos;s own position
                       varied across these periods.
                     </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
-                      For crypto assets, matching focuses on the liquidity and risk-appetite
-                      indicators (Fed policy, real rates, money supply, dollar, credit stress) and
-                      only considers months since the asset traded — both changes improved accuracy
-                      in walk-forward testing.
+                    <p className="mt-1.5">
+                      For crypto assets, matching focuses on liquidity, risk-appetite and crypto
+                      cycle gauges, with short and long horizons matched separately — validated
+                      improvements in walk-forward testing.
                     </p>
-                  </div>
+                  </InfoTip>
                 </div>
               </div>
             )}

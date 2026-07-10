@@ -82,7 +82,7 @@ function AuthForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 sm:text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
         />
         <input
           type="password"
@@ -91,7 +91,7 @@ function AuthForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password (min. 8 characters)"
-          className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 sm:text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
         />
 
         {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}

@@ -77,7 +77,7 @@ export function ProWaitlist({ source }: { source: string }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
-            className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+            className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 sm:text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
           />
           <button
             type="submit"

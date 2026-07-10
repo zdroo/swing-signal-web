@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { MacroIndicatorValueDto } from "@/types";
 import { getIndicator } from "@/lib/indicators";
@@ -80,6 +80,22 @@ export function MacroIndicatorCard({ indicatorKey, data }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [placeAbove, setPlaceAbove] = useState(true);
   const [xShift, setXShift] = useState(0);
+  // Hover on mouse, tap-to-toggle on touch
+  const [open, setOpen] = useState(false);
+  const lastPointerType = useRef<string>("mouse");
+
+  useEffect(() => {
+    if (!open) return;
+    const onOutside = (e: MouseEvent | TouchEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onOutside);
+    document.addEventListener("touchstart", onOutside);
+    return () => {
+      document.removeEventListener("mousedown", onOutside);
+      document.removeEventListener("touchstart", onOutside);
+    };
+  }, [open]);
 
   const info = getIndicator(indicatorKey);
   const colorClass = SIGNAL_COLORS[data.signal] ?? GRAY;
@@ -122,7 +138,31 @@ export function MacroIndicatorCard({ indicatorKey, data }: Props) {
       : "text-zinc-500";
 
   return (
-    <div ref={containerRef} onMouseEnter={updatePlacement} className="group relative h-full">
+    <div
+      ref={containerRef}
+      className="relative h-full"
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") {
+          updatePlacement();
+          setOpen(true);
+        }
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") setOpen(false);
+      }}
+      onPointerDown={(e) => {
+        lastPointerType.current = e.pointerType;
+      }}
+      onClick={() => {
+        if (lastPointerType.current !== "mouse") {
+          if (open) setOpen(false);
+          else {
+            updatePlacement();
+            setOpen(true);
+          }
+        }
+      }}
+    >
       <div className="h-full cursor-help rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 flex flex-col gap-3">
         <div className="flex items-start justify-between gap-2">
           <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</span>
@@ -153,12 +193,14 @@ export function MacroIndicatorCard({ indicatorKey, data }: Props) {
         </div>
       </div>
 
-      {/* Hover tooltip — flips below the card near the top of the viewport,
-          shifts horizontally at screen edges */}
-      {info && (
+      {/* Tooltip (hover or tap) — flips below the card near the top of the
+          viewport, shifts horizontally at screen edges. Rendered only while
+          open: a hidden absolute element would still widen the page. */}
+      {info && open && (
         <div
           style={{ transform: `translateX(calc(-50% + ${xShift}px))` }}
-          className={`pointer-events-none absolute left-1/2 z-30 w-72 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 opacity-0 shadow-xl transition-opacity duration-150 group-hover:pointer-events-auto group-hover:opacity-100 ${
+          onClick={(e) => e.stopPropagation()} // taps inside (Learn more) must not toggle
+          className={`absolute left-1/2 z-30 w-72 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 shadow-xl ${
             placeAbove ? "bottom-full mb-2" : "top-full mt-2"
           }`}
         >

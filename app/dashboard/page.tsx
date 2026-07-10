@@ -122,29 +122,33 @@ export default async function DashboardPage() {
               const topPct = hasPct ? Math.max(1, Math.ceil(m.topPercent)) : null;
 
               return (
-                <span
+                <InfoTip
                   key={m.date}
-                  title={
-                    (hasPct
-                      ? `This month is closer to today's macro conditions than ${(100 - m.topPercent).toFixed(0)}% of all months since 1990. `
-                      : "") +
-                    `Similarity ${m.similarityScore.toFixed(1)}/100 measures how closely that month's indicators match today's. Exact repeats never happen, so even the best match in 30+ years scores around 65 — anything above ~55 is unusually strong.`
-                  }
-                  className="cursor-help rounded-full border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-sm text-zinc-700 dark:text-zinc-300"
-                >
-                  {new Date(m.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                  })}{" "}
-                  {topPct !== null && (
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                      top {topPct}%
+                  trigger={
+                    <span className="cursor-help rounded-full border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-sm text-zinc-700 dark:text-zinc-300">
+                      {new Date(m.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                      })}{" "}
+                      {topPct !== null && (
+                        <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                          top {topPct}%
+                        </span>
+                      )}{" "}
+                      <span className="text-xs text-zinc-500">
+                        · similarity {m.similarityScore.toFixed(0)}/100
+                      </span>
                     </span>
-                  )}{" "}
-                  <span className="text-xs text-zinc-500">
-                    · similarity {m.similarityScore.toFixed(0)}/100
-                  </span>
-                </span>
+                  }
+                >
+                  {hasPct
+                    ? `This month is closer to today's macro conditions than ${(100 - m.topPercent).toFixed(0)}% of all months since 1990. `
+                    : ""}
+                  Similarity {m.similarityScore.toFixed(1)}/100 measures how closely that
+                  month&apos;s indicators match today&apos;s. Exact repeats never happen, so even
+                  the best match in 30+ years scores around 65 — anything above ~55 is unusually
+                  strong.
+                </InfoTip>
               );
             })}
           </div>

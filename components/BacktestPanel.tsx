@@ -194,31 +194,41 @@ export function BacktestPanel({ symbol }: { symbol: string }) {
             <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
               <table className="w-full text-sm">
                 <thead>
-                  {/* Native titles here — hover balloons would clip inside the scroll container */}
                   <tr className="border-b border-zinc-200 dark:border-zinc-800 text-xs uppercase tracking-wider text-zinc-500">
-                    <th
-                      className="cursor-help px-4 py-2 text-left"
-                      title="All test predictions grouped by the odds the model gave. Each row asks: when the model said e.g. 60-70%, did the asset actually rise about that often? Rows where the last two columns are close mean the odds can be taken at face value."
-                    >
-                      When Model Said
+                    <th className="px-4 py-2 text-left">
+                      <span className="inline-flex items-center gap-1">
+                        When Model Said
+                        <InfoTip align="left">
+                          All test predictions grouped by the odds the model gave. Each row asks:
+                          when the model said e.g. 60–70%, did the asset actually rise about that
+                          often? Rows where the last two columns are close mean the odds can be
+                          taken at face value.
+                        </InfoTip>
+                      </span>
                     </th>
-                    <th
-                      className="cursor-help px-4 py-2 text-center"
-                      title="How many test predictions fell into this odds range. Small counts (under ~20) can be off just by chance."
-                    >
-                      Cases
+                    <th className="px-4 py-2 text-center">
+                      <span className="inline-flex items-center gap-1">
+                        Cases
+                        <InfoTip>
+                          How many test predictions fell into this odds range. Small counts (under
+                          ~20) can be off just by chance.
+                        </InfoTip>
+                      </span>
                     </th>
-                    <th
-                      className="cursor-help px-4 py-2 text-center"
-                      title="The average odds the model gave within this range."
-                    >
-                      Avg Predicted
+                    <th className="px-4 py-2 text-center">
+                      <span className="inline-flex items-center gap-1">
+                        Avg Predicted
+                        <InfoTip>The average odds the model gave within this range.</InfoTip>
+                      </span>
                     </th>
-                    <th
-                      className="cursor-help px-4 py-2 text-center"
-                      title="How often the asset actually ended higher in those cases. Green = within 10 points of predicted, amber = within 20, red = further off."
-                    >
-                      Actually Went Up
+                    <th className="px-4 py-2 text-center">
+                      <span className="inline-flex items-center gap-1">
+                        Actually Went Up
+                        <InfoTip align="right">
+                          How often the asset actually ended higher in those cases. Green = within
+                          10 points of predicted, amber = within 20, red = further off.
+                        </InfoTip>
+                      </span>
                     </th>
                   </tr>
                 </thead>
