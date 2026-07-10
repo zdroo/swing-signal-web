@@ -50,7 +50,8 @@ export function PriceChart({
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
         textColor: "#71717a",
-        attributionLogo: false,
+        // TradingView attribution logo stays on — the Lightweight Charts
+        // license requires visible attribution
       },
       grid: {
         vertLines: { color: "rgba(113, 113, 122, 0.12)" },

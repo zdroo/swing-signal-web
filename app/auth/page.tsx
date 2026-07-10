@@ -105,6 +105,20 @@ function AuthForm() {
           {mode === "register" ? "Create account" : "Log in"}
         </button>
 
+        {mode === "register" && (
+          <p className="text-center text-xs text-zinc-500">
+            By creating an account you agree to the{" "}
+            <Link href="/terms" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+              Terms of Use
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        )}
+
         {mode === "login" && (
           <div className="text-right">
             <Link
