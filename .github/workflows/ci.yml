@@ -27,6 +27,9 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
+      - name: Test
+        run: npx vitest run
+
       # Static pages fetch API data at build time and fall back to their
       # error/empty states when it's unreachable (verified) — the build
       # must succeed without a running backend.
