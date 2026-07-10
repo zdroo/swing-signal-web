@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, TrendingUp, X } from "lucide-react";
 import { UserMenu } from "@/components/UserMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -17,6 +18,10 @@ const LINKS = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   // Close the mobile menu on outside tap (link taps close it in their onClick)
   useEffect(() => {
@@ -49,13 +54,18 @@ export function Navbar() {
         </Link>
 
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
-          {/* Desktop links */}
-          <div className="hidden items-center gap-4 sm:flex">
+          {/* Desktop links — the current page wears a pill */}
+          <div className="hidden items-center gap-1 sm:flex">
             {LINKS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors hover:text-zinc-900 dark:hover:text-white"
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className={`rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors ${
+                  isActive(item.href)
+                    ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white"
+                    : "text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
+                }`}
               >
                 {item.label}
               </Link>
@@ -86,7 +96,12 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="block py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors hover:text-zinc-900 dark:hover:text-white"
+              aria-current={isActive(item.href) ? "page" : undefined}
+              className={`block border-l-2 py-3 pl-3 text-sm font-medium transition-colors ${
+                isActive(item.href)
+                  ? "border-emerald-500 text-zinc-900 dark:text-white"
+                  : "border-transparent text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
+              }`}
             >
               {item.label}
             </Link>
