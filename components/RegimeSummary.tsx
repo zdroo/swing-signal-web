@@ -1,6 +1,7 @@
 import { ScrollText } from "lucide-react";
 import { MarketHealth } from "@/components/MarketHealth";
-import type { MarketHealthDto } from "@/types";
+import { Playbook } from "@/components/Playbook";
+import type { MarketHealthDto, PlaybookDto } from "@/types";
 
 // The backend-computed synthesis of the current indicator signals: the visual
 // composition (groups → market health score) plus the plain-words narrative.
@@ -8,10 +9,12 @@ import type { MarketHealthDto } from "@/types";
 export function RegimeSummary({
   health,
   summary,
+  playbook,
   title = "Current Market Conditions",
 }: {
   health: MarketHealthDto;
   summary: string[];
+  playbook?: PlaybookDto;
   title?: string;
 }) {
   // A cached pre-upgrade API response can briefly lack these fields right
@@ -34,6 +37,8 @@ export function RegimeSummary({
           </p>
         ))}
       </div>
+      {playbook && <Playbook playbook={playbook} />}
+
       <p className="mt-4 border-t border-zinc-200 dark:border-zinc-800 pt-3 text-xs text-zinc-500">
         Generated automatically from the indicator signals — the same rules every time,
         no opinions. Not financial advice.

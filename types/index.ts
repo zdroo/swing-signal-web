@@ -29,10 +29,26 @@ export interface MarketHealthDto {
   groups: HealthGroupDto[];
 }
 
+export type PlaybookVerdict = "Favored" | "Neutral" | "Headwinds";
+
+export interface PlaybookAssetDto {
+  name: string;
+  score: number;
+  verdict: PlaybookVerdict;
+  reasons: string[];
+}
+
+export interface PlaybookDto {
+  headline: string;
+  note: string;
+  assets: PlaybookAssetDto[]; // ranked best-first
+}
+
 export interface MacroRegimeDto {
   indicators: Record<string, MacroIndicatorValueDto>;
   health: MarketHealthDto;
   summary: string[];
+  playbook: PlaybookDto;
   asOf: string;
 }
 

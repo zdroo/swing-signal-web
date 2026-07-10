@@ -111,6 +111,7 @@ export default async function MacroPage() {
       <RegimeSummary
         health={regime.health}
         summary={regime.summary}
+        playbook={regime.playbook}
         title="Overall — What These Indicators Are Telling Us"
       />
 

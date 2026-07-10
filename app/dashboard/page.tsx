@@ -153,7 +153,11 @@ export default async function DashboardPage() {
       )}
 
       {/* Regime summary — the picture in plain words */}
-      <RegimeSummary health={macroRegime.health} summary={macroRegime.summary} />
+      <RegimeSummary
+        health={macroRegime.health}
+        summary={macroRegime.summary}
+        playbook={macroRegime.playbook}
+      />
     </div>
   );
 }
