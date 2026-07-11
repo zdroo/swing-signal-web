@@ -187,6 +187,11 @@ export interface UserProfileDto {
   createdAt: string;
   weeklyReportEnabled: boolean;
   alertsEnabled: boolean;
+  hasBilling: boolean;
+}
+
+export interface BillingUrlDto {
+  url: string;
 }
 
 export interface AuthResponse {

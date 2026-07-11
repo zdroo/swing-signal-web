@@ -5,6 +5,8 @@ import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { ProWaitlist } from "@/components/ProWaitlist";
+import { UpgradePanel } from "@/components/UpgradePanel";
+import { PRO_ENABLED } from "@/lib/features";
 import { formatPrice } from "@/lib/format";
 import type { TradeStance, WatchlistRowDto } from "@/types";
 import { Eye, Loader2, Lock, Plus, X } from "lucide-react";
@@ -18,6 +20,26 @@ const STANCE_CHIP: Record<TradeStance, string> = {
 };
 
 function ProGate() {
+  // Once Pro is live, the gate sells the upgrade; while dark, it collects
+  // waitlist interest (only a manually-upgraded Pro account can even see the
+  // tab yet, so a Free user reaching this URL is a curious early visitor)
+  if (PRO_ENABLED) {
+    return (
+      <div>
+        <div className="mb-6 rounded-xl border border-emerald-500/30 bg-white dark:bg-zinc-900 px-6 py-8 text-center">
+          <Lock className="mx-auto h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+          <h2 className="mt-4 text-lg font-semibold text-zinc-900 dark:text-white">
+            The watchlist is a Pro feature
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
+            All your assets with today&apos;s odds, edge and statistical read on one screen.
+          </p>
+        </div>
+        <UpgradePanel source="watchlist-gate" />
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-xl border border-emerald-500/30 bg-white dark:bg-zinc-900 px-6 py-12 text-center">
       <Lock className="mx-auto h-8 w-8 text-emerald-600 dark:text-emerald-400" />

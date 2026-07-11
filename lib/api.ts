@@ -9,6 +9,7 @@ import type {
   HistoricalMatchDto,
   MacroRegimeDto,
   PopularAssetDto,
+  BillingUrlDto,
   SymbolSearchResultDto,
   UserProfileDto,
   WatchlistItemDto,
@@ -177,4 +178,10 @@ export const api = {
 
   removeFromWatchlist: (symbol: string): Promise<void> =>
     delVoid(`/api/watchlist/${encodeURIComponent(symbol)}`),
+
+  createCheckout: (period: "monthly" | "yearly"): Promise<BillingUrlDto> =>
+    post("/api/billing/checkout", { period }),
+
+  openBillingPortal: (): Promise<BillingUrlDto> =>
+    post("/api/billing/portal", {}),
 };

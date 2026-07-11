@@ -2,20 +2,29 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { PRO_ENABLED } from "@/lib/features";
+import { UpgradePanel } from "@/components/UpgradePanel";
 import type { UserProfileDto } from "@/types";
 import {
-  UserCircle, Loader2, MailCheck, MailWarning, KeyRound, Trash2, Check,
+  UserCircle, Loader2, MailCheck, MailWarning, KeyRound, Trash2, Check, CreditCard, Sparkles,
 } from "lucide-react";
 
 export default function AccountPage() {
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading, logout, refreshSession } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const justUpgraded = searchParams.get("upgraded") === "1";
 
   const [profile, setProfile] = useState<UserProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // billing
+  const [portalBusy, setPortalBusy] = useState(false);
+  const [billingError, setBillingError] = useState<string | null>(null);
+  const [confirmingUpgrade, setConfirmingUpgrade] = useState(justUpgraded);
 
   // change password form
   const [currentPw, setCurrentPw] = useState("");
@@ -61,20 +70,49 @@ export default function AccountPage() {
     }
 
     let cancelled = false;
-    api
-      .getProfile()
-      .then((p) => {
-        if (!cancelled) setProfile(p);
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+
+    // After returning from Stripe, the webhook may lag the redirect by a
+    // moment — poll the profile until it reads Pro, then refresh the token
+    // so the plan claim (navbar, gates) updates without a re-login.
+    async function loadWithUpgradeSync() {
+      let p = await api.getProfile().catch(() => null);
+      if (justUpgraded) {
+        for (let i = 0; i < 5 && p?.plan !== "Pro"; i++) {
+          await new Promise((r) => setTimeout(r, 1500));
+          if (cancelled) return;
+          p = await api.getProfile().catch(() => p);
+        }
+        if (p?.plan === "Pro") await refreshSession().catch(() => {});
+        if (!cancelled) setConfirmingUpgrade(false);
+        // Drop the ?upgraded=1 so a refresh doesn't re-run this
+        router.replace("/account");
+      }
+      if (!cancelled) {
+        setProfile(p);
+        setLoading(false);
+      }
+    }
+
+    loadWithUpgradeSync();
 
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
+
+  const openPortal = async () => {
+    if (portalBusy) return;
+    setPortalBusy(true);
+    setBillingError(null);
+    try {
+      const { url } = await api.openBillingPortal();
+      window.location.href = url;
+    } catch (err) {
+      setBillingError(err instanceof ApiError ? err.message : "Could not open billing. Try again shortly.");
+      setPortalBusy(false);
+    }
+  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,6 +278,39 @@ export default function AccountPage() {
           </>
         )}
       </section>
+
+      {/* Billing */}
+      {confirmingUpgrade ? (
+        <section className="rounded-xl border border-emerald-500/30 bg-white dark:bg-zinc-900 p-5">
+          <p className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+            <Loader2 className="h-4 w-4 animate-spin text-emerald-600 dark:text-emerald-400" />
+            Confirming your upgrade…
+          </p>
+        </section>
+      ) : profile.plan === "Pro" ? (
+        profile.hasBilling && (
+          <section className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+            <h2 className="mb-1 flex items-center gap-2 font-semibold text-zinc-900 dark:text-white">
+              <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Pro subscription
+            </h2>
+            <p className="mb-4 text-xs text-zinc-500">
+              Update your payment method, view invoices, or cancel — you keep Pro until the period ends.
+            </p>
+            {billingError && <p className="mb-3 text-sm text-red-600 dark:text-red-400">{billingError}</p>}
+            <button
+              type="button"
+              onClick={openPortal}
+              disabled={portalBusy}
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors hover:border-zinc-400 dark:hover:border-zinc-500 disabled:opacity-50"
+            >
+              {portalBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+              Manage billing
+            </button>
+          </section>
+        )
+      ) : (
+        PRO_ENABLED && <UpgradePanel source="account" />
+      )}
 
       {/* Change password */}
       <section className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">

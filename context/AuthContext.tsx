@@ -17,6 +17,9 @@ interface AuthContextValue {
   register: (email: string, password: string) => Promise<void>;
   googleLogin: (idToken: string) => Promise<void>;
   logout: () => void;
+  // Re-issues the token so a server-side plan change (e.g. a Stripe upgrade)
+  // is reflected in the claim without making the user log out and back in.
+  refreshSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -107,8 +110,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const refreshSession = useCallback(async () => {
+    const refreshToken = localStorage.getItem(REFRESH_KEY);
+    if (!refreshToken) return;
+    const auth = await api.refresh(refreshToken);
+    storeSession(auth);
+    setUser({ email: auth.email, plan: auth.plan });
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, googleLogin, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, register, googleLogin, logout, refreshSession }}
+    >
       {children}
     </AuthContext.Provider>
   );
