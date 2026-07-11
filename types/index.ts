@@ -185,6 +185,7 @@ export interface UserProfileDto {
   plan: string;
   isEmailConfirmed: boolean;
   createdAt: string;
+  weeklyReportEnabled: boolean;
 }
 
 export interface AuthResponse {

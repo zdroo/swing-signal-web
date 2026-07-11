@@ -155,6 +155,9 @@ export const api = {
   deleteAccount: (): Promise<{ message: string }> =>
     del("/api/users/me"),
 
+  setWeeklyReport: (enabled: boolean): Promise<{ message: string }> =>
+    put("/api/users/me/weekly-report", { enabled }),
+
   getWatchlist: (): Promise<WatchlistItemDto[]> =>
     get("/api/watchlist"),
 
