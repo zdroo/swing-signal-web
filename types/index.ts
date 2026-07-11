@@ -186,6 +186,7 @@ export interface UserProfileDto {
   isEmailConfirmed: boolean;
   createdAt: string;
   weeklyReportEnabled: boolean;
+  alertsEnabled: boolean;
 }
 
 export interface AuthResponse {

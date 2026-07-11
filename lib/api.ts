@@ -158,6 +158,9 @@ export const api = {
   setWeeklyReport: (enabled: boolean): Promise<{ message: string }> =>
     put("/api/users/me/weekly-report", { enabled }),
 
+  setAlerts: (enabled: boolean): Promise<{ message: string }> =>
+    put("/api/users/me/alerts", { enabled }),
+
   getWatchlist: (): Promise<WatchlistItemDto[]> =>
     get("/api/watchlist"),
 

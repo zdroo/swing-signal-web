@@ -31,20 +31,25 @@ export default function AccountPage() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // weekly report toggle (Pro)
-  const [reportBusy, setReportBusy] = useState(false);
+  // notification toggles (Pro)
+  const [toggleBusy, setToggleBusy] = useState<"report" | "alerts" | null>(null);
 
-  const toggleWeeklyReport = async () => {
-    if (!profile || reportBusy) return;
-    const enabled = !profile.weeklyReportEnabled;
-    setReportBusy(true);
+  const toggleNotification = async (kind: "report" | "alerts") => {
+    if (!profile || toggleBusy) return;
+    const enabled = kind === "report" ? !profile.weeklyReportEnabled : !profile.alertsEnabled;
+    setToggleBusy(kind);
     try {
-      await api.setWeeklyReport(enabled);
-      setProfile({ ...profile, weeklyReportEnabled: enabled });
+      if (kind === "report") {
+        await api.setWeeklyReport(enabled);
+        setProfile({ ...profile, weeklyReportEnabled: enabled });
+      } else {
+        await api.setAlerts(enabled);
+        setProfile({ ...profile, alertsEnabled: enabled });
+      }
     } catch {
       // leave the toggle as-is; next profile load shows the truth
     } finally {
-      setReportBusy(false);
+      setToggleBusy(null);
     }
   };
 
@@ -186,32 +191,53 @@ export default function AccountPage() {
             </div>
           )}
         </div>
-        {/* Weekly report — only meaningful for Pro accounts */}
+        {/* Pro notifications */}
         {profile.plan === "Pro" && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-4">
-            <div>
-              <p className="text-sm font-medium text-zinc-900 dark:text-white">Weekly regime report</p>
-              <p className="mt-0.5 text-xs text-zinc-500">
-                Market health, playbook and your watchlist — every Monday by email.
-              </p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={profile.weeklyReportEnabled}
-              onClick={toggleWeeklyReport}
-              disabled={reportBusy}
-              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
-                profile.weeklyReportEnabled ? "bg-emerald-600" : "bg-zinc-300 dark:bg-zinc-700"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
-                  profile.weeklyReportEnabled ? "left-5.5" : "left-0.5"
-                }`}
-              />
-            </button>
-          </div>
+          <>
+            {(
+              [
+                {
+                  kind: "report" as const,
+                  title: "Weekly regime report",
+                  detail: "Market health, playbook and your watchlist — every Monday by email.",
+                  enabled: profile.weeklyReportEnabled,
+                },
+                {
+                  kind: "alerts" as const,
+                  title: "Change alerts",
+                  detail:
+                    "An email when a watchlist asset's statistical read flips or Market Health crosses a band.",
+                  enabled: profile.alertsEnabled,
+                },
+              ]
+            ).map((setting) => (
+              <div
+                key={setting.kind}
+                className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-4"
+              >
+                <div>
+                  <p className="text-sm font-medium text-zinc-900 dark:text-white">{setting.title}</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">{setting.detail}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={setting.enabled}
+                  onClick={() => toggleNotification(setting.kind)}
+                  disabled={toggleBusy !== null}
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+                    setting.enabled ? "bg-emerald-600" : "bg-zinc-300 dark:bg-zinc-700"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
+                      setting.enabled ? "left-5.5" : "left-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
+            ))}
+          </>
         )}
       </section>
 
