@@ -37,7 +37,12 @@ async function get<T>(path: string): Promise<T> {
     next: { revalidate: 300 },
     headers: authHeaders(),
   });
-  if (!res.ok) throw new ApiError(res.status, `API error ${res.status} for ${path}`);
+  if (!res.ok) {
+    // Surface the server's human-readable message (quota hints, symbol
+    // errors) instead of a bare status code
+    const text = await res.text().catch(() => "");
+    throw new ApiError(res.status, extractMessage(text) || `API error ${res.status} for ${path}`);
+  }
   return res.json();
 }
 

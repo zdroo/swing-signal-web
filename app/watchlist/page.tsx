@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -44,18 +44,6 @@ export default function WatchlistPage() {
   const [symbol, setSymbol] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      setRows(await api.getWatchlistOverview());
-      setGated(false);
-      setError(null);
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 403) setGated(true);
-      else setError("Could not load your watchlist. Try again shortly.");
-      setRows([]);
-    }
-  }, []);
-
   useEffect(() => {
     if (authLoading || !user) return;
     let cancelled = false;
@@ -84,9 +72,36 @@ export default function WatchlistPage() {
     setBusy(true);
     setError(null);
     try {
-      await api.addToWatchlist(trimmed);
+      const item = await api.addToWatchlist(trimmed);
       setSymbol("");
-      await load();
+
+      // One odds fetch for the new asset instead of recomputing the whole
+      // overview — the other rows haven't changed
+      let row: WatchlistRowDto = {
+        symbol: item.symbol,
+        name: item.name,
+        currentPrice: null,
+        odds3M: null,
+        baseRate3M: null,
+        edge3M: null,
+        tradeRead: null,
+        addedAt: item.addedAt,
+      };
+      try {
+        const odds = await api.getAssetOdds(item.symbol);
+        const hasOdds = odds.threeMonths.totalCases > 0;
+        row = {
+          ...row,
+          currentPrice: odds.currentPrice,
+          odds3M: hasOdds ? odds.threeMonths.positiveOdds : null,
+          baseRate3M: hasOdds ? odds.threeMonths.baseRate : null,
+          edge3M: hasOdds ? odds.threeMonths.edge : null,
+          tradeRead: odds.tradeRead,
+        };
+      } catch {
+        // name-only row now; the next full load fills it in
+      }
+      setRows((r) => [...(r ?? []), row]);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not add the symbol.");
     } finally {

@@ -78,6 +78,9 @@ export function PeriodPredictor({ symbol }: { symbol: string }) {
           if (err instanceof ApiError && err.status === 401) {
             setResult({ key: requestKey, kind: "gated" });
             track("gate_hit", { gate: "custom-window", symbol });
+          } else if (err instanceof ApiError && err.status === 429) {
+            // The daily-cap message ("Pro removes this cap") must reach the user
+            setResult({ key: requestKey, kind: "error", message: err.message });
           } else {
             setResult({ key: requestKey, kind: "error", message: "Could not compute odds for this period." });
           }
