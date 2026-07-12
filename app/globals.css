@@ -11,3 +11,22 @@
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Chrome/Safari paint a near-white background on autofilled fields, which
+   overrides the dark input bg. Repaint it via an inset shadow (the only way
+   to beat the UA autofill style) so filled inputs match the theme. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  -webkit-text-fill-color: #18181b; /* zinc-900 */
+  caret-color: #18181b;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #18181b inset; /* zinc-900 */
+  -webkit-text-fill-color: #f4f4f5; /* zinc-100 */
+  caret-color: #f4f4f5;
+}

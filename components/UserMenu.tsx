@@ -15,7 +15,7 @@ export function UserMenu() {
         href="/auth"
         className="rounded-lg bg-emerald-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
       >
-        Sign up free
+        Sign in
       </Link>
     );
   }

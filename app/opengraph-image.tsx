@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "SwingSignal — Honest Odds for Swing Traders";
+export const alt = "RegimeDeck — Honest Odds for Swing Traders";
 
 export default function Image() {
   return new ImageResponse(
@@ -31,7 +31,7 @@ export default function Image() {
           />
         </svg>
         <div style={{ display: "flex", fontSize: 84, fontWeight: 700, color: "#ffffff", marginTop: 12 }}>
-          SwingSignal
+          RegimeDeck
         </div>
         <div style={{ display: "flex", fontSize: 34, color: "#a1a1aa", marginTop: 16 }}>
           What are the odds? Honest, backtested macro context.

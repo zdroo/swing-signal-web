@@ -4,7 +4,7 @@ import { ScrollText } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Terms of Use",
-  description: "The rules for using SwingSignal.",
+  description: "The rules for using RegimeDeck.",
   alternates: { canonical: "/terms" },
 };
 
@@ -22,7 +22,7 @@ export default function TermsPage() {
             1. The service
           </h2>
           <p>
-            SwingSignal provides historical macroeconomic context and statistics about financial
+            RegimeDeck provides historical macroeconomic context and statistics about financial
             assets. By using the site you accept these terms. If you do not accept them, do not use
             the service. The service is provided &quot;as is&quot;, without warranties of any kind —
             including availability, accuracy, or fitness for a particular purpose.
@@ -34,7 +34,7 @@ export default function TermsPage() {
             2. No financial advice
           </h2>
           <p>
-            Nothing on SwingSignal constitutes financial, investment, legal, or tax advice. See the
+            Nothing on RegimeDeck constitutes financial, investment, legal, or tax advice. See the
             full <Link href="/disclaimer" className="text-emerald-600 dark:text-emerald-400 hover:underline">Disclaimer</Link>.
             You are solely responsible for your investment decisions and any resulting gains or losses.
           </p>
@@ -73,7 +73,7 @@ export default function TermsPage() {
             5. Limitation of liability
           </h2>
           <p>
-            To the maximum extent permitted by law, SwingSignal and its operator are not liable for
+            To the maximum extent permitted by law, RegimeDeck and its operator are not liable for
             any direct, indirect, incidental, or consequential damages arising from your use of the
             service — including trading losses, data inaccuracies, or service interruptions.
           </p>
@@ -107,7 +107,7 @@ export default function TermsPage() {
           <p>
             We may update these terms as the product evolves. Material changes will be announced on
             the site. Continued use after changes constitutes acceptance. Questions about these
-            terms: <a href="mailto:legal@swingsignal.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">legal@swingsignal.app</a>.
+            terms: <a href="mailto:legal@regimedeck.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">legal@regimedeck.app</a>.
             Last updated: July 2026.
           </p>
         </section>

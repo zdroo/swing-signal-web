@@ -29,7 +29,7 @@ async function getPageData() {
       regime: null,
       matches: [],
       popular: [],
-      error: "Could not reach the SwingSignal API. Make sure the backend is running.",
+      error: "Could not reach the RegimeDeck API. Make sure the backend is running.",
     };
   }
 }

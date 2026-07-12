@@ -1,5 +1,5 @@
 {
-  "name": "swing-signal-web",
+  "name": "regime-deck-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -19,11 +19,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "jsdom": "^29.1.1",
     "playwright": "^1.61.1",
     "tailwindcss": "^4",
     "typescript": "^5",

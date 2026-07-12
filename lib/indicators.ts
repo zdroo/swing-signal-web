@@ -35,7 +35,7 @@ export const INDICATORS: IndicatorInfo[] = [
     high: "Expensive money: borrowing slows, safe assets pay well, risk assets face a headwind. Markets often rally 6-12 months before the first cut.",
     bands: "Accommodative < 2% · Neutral 2-4% · Restrictive > 4%",
     detail:
-      "Every other interest rate in the economy — mortgages, business loans, bond yields — keys off this rate. When the Fed raises it, it is deliberately cooling the economy to fight inflation; when it cuts, it is stimulating growth. Markets are forward-looking: the direction and expected path of this rate often matters more than its level, which is why SwingSignal also tracks its 6-month momentum.",
+      "Every other interest rate in the economy — mortgages, business loans, bond yields — keys off this rate. When the Fed raises it, it is deliberately cooling the economy to fight inflation; when it cuts, it is stimulating growth. Markets are forward-looking: the direction and expected path of this rate often matters more than its level, which is why RegimeDeck also tracks its 6-month momentum.",
   },
   {
     key: "RealYield10Y",

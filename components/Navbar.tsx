@@ -56,7 +56,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span className="flex flex-col leading-tight">
-            <span className="font-bold text-zinc-900 dark:text-white">SwingSignal</span>
+            <span className="font-bold text-zinc-900 dark:text-white">RegimeDeck</span>
             <span className="hidden text-[10px] text-zinc-500 dark:text-zinc-500 sm:block">
               Macro Context Dashboard
             </span>

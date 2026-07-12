@@ -4,7 +4,7 @@ import { ShieldAlert } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Disclaimer",
-  description: "What SwingSignal is, what it isn't, and how to read our numbers responsibly.",
+  description: "What RegimeDeck is, what it isn't, and how to read our numbers responsibly.",
   alternates: { canonical: "/disclaimer" },
 };
 
@@ -22,7 +22,7 @@ export default function DisclaimerPage() {
             Not financial advice
           </h2>
           <p>
-            Nothing on SwingSignal is investment advice, a recommendation, or a solicitation to
+            Nothing on RegimeDeck is investment advice, a recommendation, or a solicitation to
             buy or sell any asset. We are not a licensed financial advisor, broker, or dealer.
             All content is provided for informational and educational purposes only. Any decision
             you make based on information from this site is yours alone.

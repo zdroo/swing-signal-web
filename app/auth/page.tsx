@@ -6,19 +6,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleProvider } from "@/components/GoogleProvider";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { ApiError } from "@/lib/api";
 import { TrendingUp, Loader2 } from "lucide-react";
 
 const GOOGLE_ENABLED = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
 function AuthForm() {
-  const [mode, setMode] = useState<"login" | "register">("register");
+  const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const { login, register, googleLogin } = useAuth();
+  const { theme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("returnTo") ?? "/dashboard";
@@ -75,6 +77,30 @@ function AuthForm() {
         </p>
       </div>
 
+      {GOOGLE_ENABLED && (
+        <>
+          <div className="flex justify-center">
+            <GoogleLogin
+              // Re-mount when the theme flips so the widget repaints in the
+              // matching palette (its iframe won't restyle a live instance)
+              key={theme}
+              onSuccess={(cred) => handleGoogle(cred.credential)}
+              onError={() => setError("Google sign-in failed. Please try again.")}
+              theme={theme === "dark" ? "filled_black" : "outline"}
+              text={mode === "register" ? "signup_with" : "signin_with"}
+              shape="rectangular"
+              logo_alignment="center"
+              width="320"
+            />
+          </div>
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-zinc-300 dark:bg-zinc-700" />
+            <span className="text-xs text-zinc-500">or use email</span>
+            <div className="h-px flex-1 bg-zinc-300 dark:bg-zinc-700" />
+          </div>
+        </>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
@@ -99,7 +125,7 @@ function AuthForm() {
         <button
           type="submit"
           disabled={busy}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 py-2.5 font-medium text-white transition-colors hover:bg-emerald-500 disabled:opacity-50"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 py-2.5 font-medium text-zinc-900 dark:text-zinc-100 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}
           {mode === "register" ? "Create account" : "Log in"}
@@ -131,31 +157,12 @@ function AuthForm() {
         )}
       </form>
 
-      {GOOGLE_ENABLED && (
-        <>
-          <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-zinc-300 dark:bg-zinc-700" />
-            <span className="text-xs text-zinc-500">or</span>
-            <div className="h-px flex-1 bg-zinc-300 dark:bg-zinc-700" />
-          </div>
-          <div className="flex justify-center">
-            <GoogleLogin
-              onSuccess={(cred) => handleGoogle(cred.credential)}
-              onError={() => setError("Google sign-in failed. Please try again.")}
-              theme="filled_black"
-              text={mode === "register" ? "signup_with" : "signin_with"}
-              width="320"
-            />
-          </div>
-        </>
-      )}
-
       <button
         onClick={() => {
           setMode(mode === "login" ? "register" : "login");
           setError(null);
         }}
-        className="mt-6 text-sm text-zinc-500 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300"
+        className="mt-6 self-center cursor-pointer rounded-lg bg-emerald-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-500"
       >
         {mode === "register"
           ? "Already have an account? Log in"

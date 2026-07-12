@@ -219,7 +219,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     term: "Base Rate",
     theme: "Trading Terms",
     definition:
-      "How often something normally happens, before any special analysis. SPY has risen in roughly 70% of ALL 3-month periods in history — that's its base rate. A prediction is only impressive if it beats the base rate. SwingSignal always shows you both, so you can see what the analysis actually adds.",
+      "How often something normally happens, before any special analysis. SPY has risen in roughly 70% of ALL 3-month periods in history — that's its base rate. A prediction is only impressive if it beats the base rate. RegimeDeck always shows you both, so you can see what the analysis actually adds.",
     analogy:
       "Your team wins 70% of games in general. Predicting a win for tomorrow isn't a hot take — it's the base rate. Claiming 90% is the actual bet.",
   },
@@ -227,7 +227,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     term: "Percentage Point (pp)",
     theme: "Trading Terms",
     definition:
-      "The unit for the DIFFERENCE between two percentages. If odds go from 70% to 72%, they rose by 2 percentage points (2pp) — not by 2%. Saying '2%' would technically mean 2% OF 70, which is just 1.4. Finance people use 'pp' to avoid exactly that confusion. When SwingSignal shows an edge like '+2pp', it means the current situation adds 2 percentage points on top of the normal odds.",
+      "The unit for the DIFFERENCE between two percentages. If odds go from 70% to 72%, they rose by 2 percentage points (2pp) — not by 2%. Saying '2%' would technically mean 2% OF 70, which is just 1.4. Finance people use 'pp' to avoid exactly that confusion. When RegimeDeck shows an edge like '+2pp', it means the current situation adds 2 percentage points on top of the normal odds.",
     analogy:
       "Your test average goes from 80 to 85. That's +5 percentage points. '5% better than 80' would only be 84 — small difference here, big difference when money is involved.",
   },

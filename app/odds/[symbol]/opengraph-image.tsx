@@ -34,7 +34,7 @@ export default async function Image({ params }: { params: Promise<{ symbol: stri
             />
           </svg>
           <div style={{ display: "flex", fontSize: 36, fontWeight: 700, color: "#71717a" }}>
-            SwingSignal
+            RegimeDeck
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-# Root editorconfig for the SwingSignal frontend.
+# Root editorconfig for the RegimeDeck frontend.
 root = true
 
 [*]

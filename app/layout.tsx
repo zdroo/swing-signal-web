@@ -21,8 +21,8 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "SwingSignal — Honest Odds for Swing Traders",
-    template: "%s — SwingSignal",
+    default: "RegimeDeck — Honest Odds for Swing Traders",
+    template: "%s — RegimeDeck",
   },
   description:
     "See how assets historically performed in macro conditions like today's. Honest, backtested odds for stocks, crypto, forex and commodities — no signals, no promises.",
@@ -32,15 +32,15 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "SwingSignal",
-    title: "SwingSignal — Honest Odds for Swing Traders",
+    siteName: "RegimeDeck",
+    title: "RegimeDeck — Honest Odds for Swing Traders",
     description:
       "Historical odds for any asset, based on 30+ years of macro regimes. Verify our accuracy yourself — every asset page has a built-in backtest.",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "SwingSignal — Honest Odds for Swing Traders",
+    title: "RegimeDeck — Honest Odds for Swing Traders",
     description:
       "Historical odds for any asset, based on 30+ years of macro regimes. No signals, no promises — and you can verify our accuracy yourself.",
   },
@@ -54,13 +54,13 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "SwingSignal",
+  name: "RegimeDeck",
   url: SITE_URL,
   description:
     "Macro context dashboard for swing traders: historical odds of asset price movements given current macroeconomic conditions.",
   publisher: {
     "@type": "Organization",
-    name: "SwingSignal",
+    name: "RegimeDeck",
     url: SITE_URL,
   },
 };

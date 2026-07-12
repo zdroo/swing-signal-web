@@ -56,7 +56,7 @@ export default async function MacroPage() {
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
         <AlertCircle className="mx-auto h-10 w-10 text-amber-600 dark:text-amber-400" />
         <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-          Could not reach the SwingSignal API. Make sure the backend is running.
+          Could not reach the RegimeDeck API. Make sure the backend is running.
         </p>
       </div>
     );

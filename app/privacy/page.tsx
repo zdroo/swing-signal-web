@@ -4,7 +4,7 @@ import { Lock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "What data SwingSignal collects, why, and your rights.",
+  description: "What data RegimeDeck collects, why, and your rights.",
   alternates: { canonical: "/privacy" },
 };
 
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
               email address from Google; we never see your Google password.
             </li>
             <li>
-              <strong>Usage data</strong> — which assets you look up on SwingSignal, so we can show
+              <strong>Usage data</strong> — which assets you look up on RegimeDeck, so we can show
               &quot;most searched&quot; lists and decide what to build next.
             </li>
             <li>
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
             Cookies &amp; local storage
           </h2>
           <p>
-            SwingSignal sets <strong>no cookies of its own</strong> — no tracking cookies, no
+            RegimeDeck sets <strong>no cookies of its own</strong> — no tracking cookies, no
             advertising cookies, which is why there is no cookie banner. We use your
             browser&apos;s local storage for two strictly necessary purposes: keeping you signed
             in (session tokens, removed on logout) and remembering your light/dark theme choice.
@@ -133,8 +133,8 @@ export default function PrivacyPage() {
           <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">Contact</h2>
           <p>
             For any privacy request, contact us at{" "}
-            <a href="mailto:privacy@swingsignal.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-              privacy@swingsignal.app
+            <a href="mailto:privacy@regimedeck.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+              privacy@regimedeck.app
             </a>
             . Last updated: July 2026.
           </p>
