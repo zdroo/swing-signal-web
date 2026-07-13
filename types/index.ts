@@ -65,6 +65,21 @@ export interface ScreenerResultDto {
   trimmed: boolean;
 }
 
+export interface SectorRotationRowDto {
+  symbol: string;
+  sector: string;
+  odds3M: number | null;
+  edge3M: number | null;
+  stance: string | null;
+  relStrength3M: number | null;
+}
+
+export interface SectorRotationResultDto {
+  sectors: SectorRotationRowDto[];
+  benchmark: string;
+  asOf: string | null;
+}
+
 export type PlaybookVerdict = "Favored" | "Neutral" | "Headwinds";
 
 export interface PlaybookAssetDto {

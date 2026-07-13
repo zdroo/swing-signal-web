@@ -14,6 +14,7 @@ import { PRO_ENABLED } from "@/lib/features";
 const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/screener", label: "Screener" },
+  { href: "/sectors", label: "Sectors" },
   { href: "/macro", label: "Live Macro" },
   { href: "/indicators", label: "Learn" },
   { href: "/glossary", label: "Dictionary" },

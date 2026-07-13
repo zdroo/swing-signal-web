@@ -11,6 +11,7 @@ import type {
   PopularAssetDto,
   BillingUrlDto,
   ScreenerResultDto,
+  SectorRotationResultDto,
   SymbolSearchResultDto,
   UserProfileDto,
   WatchlistItemDto,
@@ -179,6 +180,9 @@ export const api = {
 
   removeFromWatchlist: (symbol: string): Promise<void> =>
     delVoid(`/api/watchlist/${encodeURIComponent(symbol)}`),
+
+  getSectors: (): Promise<SectorRotationResultDto> =>
+    get("/api/sectors"),
 
   getScreener: (): Promise<ScreenerResultDto> =>
     get("/api/screener"),
