@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { formatPrice } from "@/lib/format";
+import { signColor, stanceChip } from "@/lib/display";
 import { InfoTip } from "@/components/InfoTip";
 import type { ScreenerRowDto } from "@/types";
-
-const STANCE_CHIP: Record<string, string> = {
-  "Long bias": "border-emerald-400/40 bg-emerald-400/10 text-emerald-700 dark:text-emerald-400",
-  "No edge": "border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400",
-  "Stand aside": "border-amber-400/40 bg-amber-400/10 text-amber-700 dark:text-amber-400",
-};
 
 export function ScreenerTable({ rows }: { rows: ScreenerRowDto[] }) {
   if (rows.length === 0) {
@@ -87,13 +82,7 @@ export function ScreenerTable({ rows }: { rows: ScreenerRowDto[] }) {
               </td>
               <td className="px-4 py-3 tabular-nums">
                 {row.edge3M !== null ? (
-                  <span
-                    className={
-                      row.edge3M >= 0
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-red-600 dark:text-red-400"
-                    }
-                  >
+                  <span className={signColor(row.edge3M)}>
                     {row.edge3M >= 0 ? "+" : ""}
                     {row.edge3M.toFixed(1)}pp
                   </span>
@@ -103,11 +92,7 @@ export function ScreenerTable({ rows }: { rows: ScreenerRowDto[] }) {
               </td>
               <td className="px-4 py-3">
                 {row.stance ? (
-                  <span
-                    className={`rounded-md border px-1.5 py-0.5 text-xs font-medium ${
-                      STANCE_CHIP[row.stance] ?? STANCE_CHIP["No edge"]
-                    }`}
-                  >
+                  <span className={`rounded-md border px-1.5 py-0.5 text-xs font-medium ${stanceChip(row.stance)}`}>
                     {row.stance}
                   </span>
                 ) : (

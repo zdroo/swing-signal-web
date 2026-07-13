@@ -8,16 +8,11 @@ import { ProWaitlist } from "@/components/ProWaitlist";
 import { UpgradePanel } from "@/components/UpgradePanel";
 import { PRO_ENABLED } from "@/lib/features";
 import { formatPrice } from "@/lib/format";
-import type { TradeStance, WatchlistRowDto } from "@/types";
+import { stanceChip } from "@/lib/display";
+import type { WatchlistRowDto } from "@/types";
 import { Eye, Loader2, Lock, Plus, X } from "lucide-react";
 
 const MAX_ITEMS = 15; // mirrors WatchlistService.MaxItems
-
-const STANCE_CHIP: Record<TradeStance, string> = {
-  "Long bias": "border-emerald-400/40 bg-emerald-400/10 text-emerald-700 dark:text-emerald-400",
-  "No edge": "border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400",
-  "Stand aside": "border-amber-400/40 bg-amber-400/10 text-amber-700 dark:text-amber-400",
-};
 
 function ProGate() {
   // Once Pro is live, the gate sells the upgrade; while dark, it collects
@@ -268,7 +263,7 @@ export default function WatchlistPage() {
                       <td className="px-4 py-3">
                         {row.tradeRead ? (
                           <span
-                            className={`rounded-md border px-1.5 py-0.5 text-xs font-medium ${STANCE_CHIP[row.tradeRead.stance]}`}
+                            className={`rounded-md border px-1.5 py-0.5 text-xs font-medium ${stanceChip(row.tradeRead.stance)}`}
                           >
                             {row.tradeRead.stance}
                           </span>

@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { signColor, stanceChip } from "@/lib/display";
 import { InfoTip } from "@/components/InfoTip";
 import type { SectorRotationRowDto } from "@/types";
-
-const STANCE_CHIP: Record<string, string> = {
-  "Long bias": "border-emerald-400/40 bg-emerald-400/10 text-emerald-700 dark:text-emerald-400",
-  "No edge": "border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400",
-  "Stand aside": "border-amber-400/40 bg-amber-400/10 text-amber-700 dark:text-amber-400",
-};
 
 // Plain-language "what is this sector, and when does it tend to lead?"
 const SECTOR_INFO: Record<string, string> = {
@@ -33,10 +28,6 @@ function tileTone(edge: number | null): string {
   if (edge > -2) return "border-zinc-300 dark:border-zinc-700 bg-zinc-100/60 dark:bg-zinc-800/40";
   if (edge > -6) return "border-red-400/30 bg-red-400/[0.08]";
   return "border-red-500/40 bg-red-500/15";
-}
-
-function signColor(v: number): string {
-  return v >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400";
 }
 
 export function SectorHeatmap({
@@ -87,7 +78,7 @@ export function SectorHeatmap({
 
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
             {s.stance ? (
-              <span className={`rounded-md border px-1.5 py-0.5 text-[11px] font-medium ${STANCE_CHIP[s.stance] ?? STANCE_CHIP["No edge"]}`}>
+              <span className={`rounded-md border px-1.5 py-0.5 text-[11px] font-medium ${stanceChip(s.stance)}`}>
                 {s.stance}
               </span>
             ) : (
