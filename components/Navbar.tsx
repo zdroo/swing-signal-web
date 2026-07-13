@@ -13,6 +13,7 @@ import { PRO_ENABLED } from "@/lib/features";
 // → learn → look up
 const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/screener", label: "Screener" },
   { href: "/macro", label: "Live Macro" },
   { href: "/indicators", label: "Learn" },
   { href: "/glossary", label: "Dictionary" },
@@ -26,8 +27,9 @@ export function Navbar() {
 
   // Watchlist is Pro: while the dark-launch flag is off only Pro accounts
   // see the tab at all; once Pro is live everyone does (Free gets the pitch)
+  // Watchlist tab sits after Screener; Pro-only while the flag is dark
   const links = user?.plan === "Pro" || PRO_ENABLED
-    ? [LINKS[0], { href: "/watchlist", label: "Watchlist" }, ...LINKS.slice(1)]
+    ? [LINKS[0], LINKS[1], { href: "/watchlist", label: "Watchlist" }, ...LINKS.slice(2)]
     : LINKS;
 
   const isActive = (href: string) =>

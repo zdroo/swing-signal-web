@@ -46,6 +46,25 @@ export interface WatchlistRowDto {
   addedAt: string;
 }
 
+export interface ScreenerRowDto {
+  symbol: string;
+  name: string;
+  marketType: string;
+  currentPrice: number | null;
+  odds3M: number | null;
+  baseRate3M: number | null;
+  edge3M: number | null;
+  stance: string | null;
+  strength: string | null;
+}
+
+export interface ScreenerResultDto {
+  rows: ScreenerRowDto[];
+  asOf: string | null;
+  universeSize: number;
+  trimmed: boolean;
+}
+
 export type PlaybookVerdict = "Favored" | "Neutral" | "Headwinds";
 
 export interface PlaybookAssetDto {

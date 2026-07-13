@@ -10,6 +10,7 @@ import type {
   MacroRegimeDto,
   PopularAssetDto,
   BillingUrlDto,
+  ScreenerResultDto,
   SymbolSearchResultDto,
   UserProfileDto,
   WatchlistItemDto,
@@ -178,6 +179,18 @@ export const api = {
 
   removeFromWatchlist: (symbol: string): Promise<void> =>
     delVoid(`/api/watchlist/${encodeURIComponent(symbol)}`),
+
+  getScreener: (): Promise<ScreenerResultDto> =>
+    get("/api/screener"),
+
+  getScreenerFull: (filters?: { stance?: string; market?: string; minEdge?: number }): Promise<ScreenerResultDto> => {
+    const params = new URLSearchParams();
+    if (filters?.stance) params.set("stance", filters.stance);
+    if (filters?.market) params.set("market", filters.market);
+    if (typeof filters?.minEdge === "number") params.set("minEdge", String(filters.minEdge));
+    const query = params.toString();
+    return get(`/api/screener/full${query ? `?${query}` : ""}`);
+  },
 
   createCheckout: (period: "monthly" | "yearly"): Promise<BillingUrlDto> =>
     post("/api/billing/checkout", { period }),
