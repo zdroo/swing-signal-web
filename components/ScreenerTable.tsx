@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatPrice } from "@/lib/format";
+import { InfoTip } from "@/components/InfoTip";
 import type { ScreenerRowDto } from "@/types";
 
 const STANCE_CHIP: Record<string, string> = {
@@ -24,9 +25,45 @@ export function ScreenerTable({ rows }: { rows: ScreenerRowDto[] }) {
           <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-xs uppercase tracking-wider text-zinc-500">
             <th className="px-4 py-3 font-medium">Asset</th>
             <th className="px-4 py-3 font-medium">Price</th>
-            <th className="px-4 py-3 font-medium">3M Odds</th>
-            <th className="px-4 py-3 font-medium">Edge</th>
-            <th className="px-4 py-3 font-medium">Statistical Read</th>
+            <th className="px-4 py-3 font-medium">
+              <span className="inline-flex items-center gap-1">
+                3M Odds
+                <InfoTip align="left">
+                  The model&apos;s estimate of the chance this asset is <span className="font-medium">higher
+                  three months from now</span>, based on how it performed after historically similar macro
+                  conditions. It&apos;s shrunk toward the asset&apos;s own long-run base rate, so a thin
+                  sample never produces an extreme claim.
+                </InfoTip>
+              </span>
+            </th>
+            <th className="px-4 py-3 font-medium">
+              <span className="inline-flex items-center gap-1">
+                Edge
+                <InfoTip align="left">
+                  How many percentage points the <span className="font-medium">current macro regime</span>{" "}
+                  shifts the odds versus the asset&apos;s all-time base rate (the share of every 3-month
+                  window that was positive). <span className="font-medium">+5pp</span>{" "}
+                  means conditions like today historically added 5 points to the odds — this is what the
+                  regime actually
+                  contributes, stripped of the asset&apos;s baseline drift.
+                </InfoTip>
+              </span>
+            </th>
+            <th className="px-4 py-3 font-medium">
+              <span className="inline-flex items-center gap-1">
+                Statistical Read
+                <InfoTip align="left">
+                  A plain-English verdict from the odds:{" "}
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">Long bias</span>{" "}
+                  (a meaningful positive edge with decent odds),{" "}
+                  <span className="font-medium">No edge</span>{" "}
+                  (the regime barely moves the odds — near a coin flip), or{" "}
+                  <span className="font-medium text-amber-600 dark:text-amber-400">Stand aside</span>{" "}
+                  (odds run below the asset&apos;s normal base rate). Descriptive context, never a
+                  buy/sell signal.
+                </InfoTip>
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -35,6 +72,7 @@ export function ScreenerTable({ rows }: { rows: ScreenerRowDto[] }) {
               <td className="px-4 py-3">
                 <Link
                   href={`/odds/${encodeURIComponent(row.symbol)}`}
+                  title={`${row.name} · ${row.marketType}`}
                   className="font-medium text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400"
                 >
                   {row.symbol}
