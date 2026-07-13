@@ -1,11 +1,27 @@
 import Link from "next/link";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { InfoTip } from "@/components/InfoTip";
 import type { SectorRotationRowDto } from "@/types";
 
 const STANCE_CHIP: Record<string, string> = {
   "Long bias": "border-emerald-400/40 bg-emerald-400/10 text-emerald-700 dark:text-emerald-400",
   "No edge": "border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400",
   "Stand aside": "border-amber-400/40 bg-amber-400/10 text-amber-700 dark:text-amber-400",
+};
+
+// Plain-language "what is this sector, and when does it tend to lead?"
+const SECTOR_INFO: Record<string, string> = {
+  XLK: "Software, chips and hardware — Apple, Microsoft, Nvidia. Growth-sensitive; tends to lead mid-cycle expansions.",
+  XLF: "Banks, insurers and asset managers. Helped by rising rates and a healthy economy; a classic early-cycle leader.",
+  XLE: "Oil & gas producers and services. Moves with commodity prices and inflation; typically a late-cycle leader.",
+  XLV: "Drugmakers, insurers and medical devices. Defensive — demand holds up even in a downturn.",
+  XLI: "Machinery, aerospace, transport and construction. Cyclical; tends to lead early in a recovery.",
+  XLY: "Consumer non-essentials — retailers, autos, restaurants, travel. Rides consumer confidence; early-cycle.",
+  XLP: "Consumer essentials — food, beverages, household goods. Defensive; holds up when the economy slows.",
+  XLU: "Electric, gas and water providers. Defensive and bond-like; favored when rates fall or fear rises.",
+  XLB: "Chemicals, metals, mining and packaging. Commodity- and inflation-sensitive; late-cycle.",
+  XLRE: "REITs — property owners and landlords. Rate-sensitive; hurt by rising rates, helped by falling ones.",
+  XLC: "Telecom, media and internet platforms — Meta, Google, Netflix. A mix of growth and defensives.",
 };
 
 // Tile tint encodes the regime edge — the heatmap signal. Green = the regime
@@ -19,8 +35,8 @@ function tileTone(edge: number | null): string {
   return "border-red-500/40 bg-red-500/15";
 }
 
-function edgeColor(edge: number): string {
-  return edge >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400";
+function signColor(v: number): string {
+  return v >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400";
 }
 
 export function SectorHeatmap({
@@ -41,19 +57,23 @@ export function SectorHeatmap({
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {sectors.map((s) => (
-        <Link
-          key={s.symbol}
-          href={`/odds/${encodeURIComponent(s.symbol)}`}
-          className={`block rounded-xl border p-4 transition-colors hover:border-zinc-400 dark:hover:border-zinc-500 ${tileTone(s.edge3M)}`}
-        >
+        <div key={s.symbol} className={`rounded-xl border p-4 ${tileTone(s.edge3M)}`}>
           <div className="flex items-baseline justify-between gap-2">
-            <span className="font-semibold text-zinc-900 dark:text-white">{s.sector}</span>
+            <span className="inline-flex items-center gap-1">
+              <Link
+                href={`/odds/${encodeURIComponent(s.symbol)}`}
+                className="font-semibold text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400"
+              >
+                {s.sector}
+              </Link>
+              {SECTOR_INFO[s.symbol] && <InfoTip align="left">{SECTOR_INFO[s.symbol]}</InfoTip>}
+            </span>
             <span className="text-xs text-zinc-500">{s.symbol}</span>
           </div>
 
           {/* Regime edge — the headline heatmap value */}
           <div className="mt-2 flex items-baseline gap-1.5">
-            <span className={`text-2xl font-bold tabular-nums ${s.edge3M !== null ? edgeColor(s.edge3M) : "text-zinc-400"}`}>
+            <span className={`text-2xl font-bold tabular-nums ${s.edge3M !== null ? signColor(s.edge3M) : "text-zinc-400"}`}>
               {s.edge3M !== null ? `${s.edge3M >= 0 ? "+" : ""}${s.edge3M.toFixed(1)}` : "—"}
             </span>
             <span className="text-xs text-zinc-500">pp regime edge</span>
@@ -68,15 +88,31 @@ export function SectorHeatmap({
               <span className="text-[11px] text-zinc-500">pending data</span>
             )}
 
-            {/* Momentum — relative strength vs the benchmark */}
+            {/* Momentum — relative strength vs the benchmark, with its own tooltip */}
             {s.relStrength3M !== null && (
-              <span className={`inline-flex items-center gap-1 text-xs tabular-nums ${edgeColor(s.relStrength3M)}`}>
-                {s.relStrength3M >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                {s.relStrength3M >= 0 ? "+" : ""}{s.relStrength3M.toFixed(1)}% vs {benchmark}
-              </span>
+              <InfoTip
+                align="right"
+                trigger={
+                  <span className={`inline-flex cursor-help items-center gap-1 text-xs tabular-nums ${signColor(s.relStrength3M)}`}>
+                    {s.relStrength3M >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                    {s.relStrength3M >= 0 ? "+" : ""}{s.relStrength3M.toFixed(1)}% vs {benchmark}
+                  </span>
+                }
+              >
+                {benchmark}{" "}tracks the S&amp;P 500 — the broad U.S. market. This is the sector&apos;s
+                return <span className="font-medium">minus</span> {benchmark}&apos;s over the last ~3
+                months, so{" "}
+                <span className="font-medium">
+                  {s.relStrength3M >= 0
+                    ? `+${s.relStrength3M.toFixed(1)}% means it beat the market by ${s.relStrength3M.toFixed(1)} points`
+                    : `${s.relStrength3M.toFixed(1)}% means it lagged the market by ${Math.abs(s.relStrength3M).toFixed(1)} points`}
+                </span>{" "}
+                (it can still be up in absolute terms). It&apos;s the momentum lens — where money is
+                actually moving — separate from the regime edge.
+              </InfoTip>
             )}
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );

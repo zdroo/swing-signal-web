@@ -52,9 +52,11 @@ export default function SectorsPage() {
         <span className="inline-flex items-center gap-1">
           <span className="font-semibold text-zinc-900 dark:text-white">Relative strength</span>
           <InfoTip align="left">
-            How much the sector has out- or under-performed the benchmark over the last ~3 months —
-            the momentum lens, i.e. where money is actually moving right now, regardless of the
-            macro backdrop.
+            Compares the sector to <span className="font-medium">SPY — the S&amp;P 500</span>, i.e. the
+            broad U.S. market. It&apos;s the sector&apos;s ~3-month return minus the market&apos;s:
+            positive means it&apos;s outpacing the market (money rotating in), negative means it&apos;s
+            lagging even if it still rose. The momentum lens — where money is actually moving — separate
+            from the macro regime.
           </InfoTip>
         </span>
       </div>
