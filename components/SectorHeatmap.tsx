@@ -55,9 +55,15 @@ export function SectorHeatmap({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    // Flex-wrap + justify-center so full rows fill edge-to-edge while an
+    // incomplete last row (11 sectors → a row of 2) centers instead of
+    // hugging the left. Tile widths mirror the old 1/2/3-column breakpoints.
+    <div className="flex flex-wrap justify-center gap-3">
       {sectors.map((s) => (
-        <div key={s.symbol} className={`rounded-xl border p-4 ${tileTone(s.edge3M)}`}>
+        <div
+          key={s.symbol}
+          className={`w-full rounded-xl border p-4 sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.5rem)] ${tileTone(s.edge3M)}`}
+        >
           <div className="flex items-baseline justify-between gap-2">
             <span className="inline-flex items-center gap-1">
               <Link
