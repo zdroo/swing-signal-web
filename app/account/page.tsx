@@ -244,7 +244,7 @@ export default function AccountPage() {
                   kind: "alerts" as const,
                   title: "Change alerts",
                   detail:
-                    "An email when a watchlist asset's read flips, its regime edge turns positive, or its price breaks its 3-month target range — plus Market Health band moves.",
+                    "An email when a watchlist asset's read flips or its regime edge turns positive — plus Market Health band moves.",
                   enabled: profile.alertsEnabled,
                 },
               ]

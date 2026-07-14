@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
+import { useAuth } from "@/context/AuthContext";
 import { InfoTip } from "@/components/InfoTip";
 import type { AssetPeriodOddsDto } from "@/types";
 import { Loader2, AlertCircle, Lock } from "lucide-react";
@@ -59,11 +60,22 @@ type PredictorResult =
   | { key: string; kind: "error"; message: string };
 
 export function PeriodPredictor({ symbol }: { symbol: string }) {
+  const { user, loading: authLoading } = useAuth();
   const [days, setDays] = useState(30);
   const [result, setResult] = useState<PredictorResult | null>(null);
   const requestKey = `${symbol}:${days}`;
 
+  // Custom windows are an account feature, so a logged-out user is gated
+  // without ever firing the request (which would just 401).
+  const gatedByAuth = !authLoading && !user;
+
+  // Record the gate impression once, for the anonymous case
   useEffect(() => {
+    if (gatedByAuth) track("gate_hit", { gate: "custom-window", symbol });
+  }, [gatedByAuth, symbol]);
+
+  useEffect(() => {
+    if (authLoading || !user) return; // logged out → derived gate below, no request
     let cancelled = false;
 
     // Debounce so dragging the slider doesn't fire a request per pixel
@@ -91,11 +103,11 @@ export function PeriodPredictor({ symbol }: { symbol: string }) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [symbol, days, requestKey]);
+  }, [symbol, days, requestKey, user, authLoading]);
 
-  const loading = result?.key !== requestKey;
-  // The gate is symbol-wide — once hit, keep showing it across window changes
-  const gated = result?.kind === "gated";
+  const loading = !gatedByAuth && result?.key !== requestKey;
+  // Gated either by being logged out, or by a 401 from an expired token
+  const gated = gatedByAuth || result?.kind === "gated";
   const error = !loading && result?.kind === "error" ? result.message : null;
   // Previous window's numbers stay visible (dimmed) while the next loads
   const data = result?.kind === "data" ? result.data : null;
