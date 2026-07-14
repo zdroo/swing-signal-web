@@ -14,6 +14,7 @@ import { BacktestPanel } from "@/components/BacktestPanel";
 import { PriceChart } from "@/components/PriceChart";
 import { TradeReadCard } from "@/components/TradeReadCard";
 import { UpcomingEventsBanner } from "@/components/UpcomingEventsBanner";
+import { AccuracyTrustLine } from "@/components/AccuracyTrustLine";
 import { ProWaitlist } from "@/components/ProWaitlist";
 import { InfoTip } from "@/components/InfoTip";
 import { AlertCircle, ArrowLeft, Info, Loader2, Lock } from "lucide-react";
@@ -240,6 +241,9 @@ export default function OddsPage() {
           {/* The takeaway first: what the analog statistics support right now */}
           {odds.tradeRead && <TradeReadCard read={odds.tradeRead} />}
 
+          {/* Trust at the point of decision — points to the backtest below */}
+          <AccuracyTrustLine matchesUsed={odds.matchesUsed} />
+
           <PriceChart
             symbol={odds.symbol}
             analogs={odds.breakdown?.points}
@@ -250,7 +254,9 @@ export default function OddsPage() {
 
           <PeriodPredictor symbol={odds.symbol} />
 
-          <BacktestPanel symbol={odds.symbol} />
+          <div id="backtest" className="scroll-mt-20">
+            <BacktestPanel symbol={odds.symbol} />
+          </div>
 
           <section className="space-y-6">
             <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
