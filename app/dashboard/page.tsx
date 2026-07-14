@@ -15,6 +15,7 @@ import type { MacroRegimeDto } from "@/types";
 import { AlertCircle } from "lucide-react";
 import { LiveMacroCta } from "@/components/LiveMacroCta";
 import { ConditionsStrip } from "@/components/ConditionsStrip";
+import { UpcomingEventsBanner } from "@/components/UpcomingEventsBanner";
 
 async function getPageData() {
   try {
@@ -77,6 +78,9 @@ export default async function DashboardPage() {
         playbook={macroRegime.playbook}
         summary={macroRegime.summary}
       />
+
+      {/* Heads-up on any market-moving macro release coming up */}
+      <UpcomingEventsBanner />
 
       {/* Asset search — the primary action, front and center */}
       <section className="rounded-2xl border border-emerald-500/30 bg-white dark:bg-zinc-900 p-6">

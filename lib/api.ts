@@ -12,6 +12,7 @@ import type {
   BillingUrlDto,
   ScreenerResultDto,
   SectorRotationResultDto,
+  UpcomingEventsDto,
   SymbolSearchResultDto,
   UserProfileDto,
   WatchlistItemDto,
@@ -183,6 +184,9 @@ export const api = {
 
   getSectors: (): Promise<SectorRotationResultDto> =>
     get("/api/sectors"),
+
+  getUpcomingEvents: (take = 5): Promise<UpcomingEventsDto> =>
+    get(`/api/events/upcoming?take=${take}`),
 
   getScreener: (): Promise<ScreenerResultDto> =>
     get("/api/screener"),

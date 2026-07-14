@@ -80,6 +80,17 @@ export interface SectorRotationResultDto {
   asOf: string | null;
 }
 
+export interface EconomicEventDto {
+  title: string;
+  date: string;
+  impact: string;
+}
+
+export interface UpcomingEventsDto {
+  events: EconomicEventDto[];
+  asOf: string;
+}
+
 export type PlaybookVerdict = "Favored" | "Neutral" | "Headwinds";
 
 export interface PlaybookAssetDto {
