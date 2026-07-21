@@ -29,25 +29,66 @@ export class ApiError extends Error {
   }
 }
 
-// Client-side only — server components never have a token
-function authHeaders(): Record<string, string> {
-  if (typeof window === "undefined") return {};
-  const token = localStorage.getItem("ss_access_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+// ── Session state ──────────────────────────────────────────────────────
+// The access token lives ONLY in memory (a module variable), never in
+// localStorage — so an XSS payload can't read it. The long-lived refresh token
+// lives in an HttpOnly cookie the browser manages and JavaScript cannot touch.
+// On a full reload the in-memory token is gone; AuthContext rehydrates it by
+// calling refresh() (which sends the cookie) on mount.
+let accessToken: string | null = null;
+let onUnauthorized: (() => void) | null = null;
+
+export function setAccessToken(token: string | null): void {
+  accessToken = token;
 }
 
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    next: { revalidate: 300 },
-    headers: authHeaders(),
+// AuthContext registers this so a silent refresh that ultimately fails (session
+// truly dead/revoked) drops the user to logged-out UI.
+export function setOnUnauthorized(cb: (() => void) | null): void {
+  onUnauthorized = cb;
+}
+
+function authHeaders(): Record<string, string> {
+  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+}
+
+// ── Silent refresh (single-flight) ─────────────────────────────────────
+// When the 1-hour access token expires, the next request 401s; we transparently
+// refresh once and retry. Many requests can 401 at once (a dashboard fires
+// several) — they must share ONE refresh, not stampede it (concurrent refreshes
+// would rotate each other's tokens and trip server-side reuse detection).
+let refreshInFlight: Promise<AuthResponse | null> | null = null;
+
+function refreshAccessOnce(): Promise<AuthResponse | null> {
+  refreshInFlight ??= (async () => {
+    const res = await fetch(`${BASE_URL}/api/auth/refresh`, {
+      method: "POST",
+      credentials: "include", // send the HttpOnly refresh cookie
+    });
+    if (!res.ok) {
+      accessToken = null;
+      return null;
+    }
+    const data = (await res.json()) as AuthResponse;
+    accessToken = data.accessToken;
+    return data;
+  })().finally(() => {
+    refreshInFlight = null;
   });
-  if (!res.ok) {
-    // Surface the server's human-readable message (quota hints, symbol
-    // errors) instead of a bare status code
-    const text = await res.text().catch(() => "");
-    throw new ApiError(res.status, extractMessage(text) || `API error ${res.status} for ${path}`);
+  return refreshInFlight;
+}
+
+// Runs a request; on a 401 (for anything but the auth endpoints themselves)
+// refreshes once and retries. doFetch is a thunk so the retry re-reads the
+// freshly-rotated access token. No refresh loop: /api/auth/* is exempt.
+async function withRetry(path: string, doFetch: () => Promise<Response>): Promise<Response> {
+  let res = await doFetch();
+  if (res.status === 401 && !path.startsWith("/api/auth/")) {
+    const refreshed = await refreshAccessOnce();
+    if (refreshed) res = await doFetch();
+    else onUnauthorized?.();
   }
-  return res.json();
+  return res;
 }
 
 // Error bodies are either { message } (exception middleware) or a bare JSON
@@ -63,12 +104,26 @@ function extractMessage(text: string): string {
   return text;
 }
 
+async function get<T>(path: string): Promise<T> {
+  // GETs don't need the cookie (Bearer covers auth; the cookie is scoped to
+  // /api/auth), so no credentials here — keeps Next's data cache eligible.
+  const res = await withRetry(path, () =>
+    fetch(`${BASE_URL}${path}`, { next: { revalidate: 300 }, headers: authHeaders() }));
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new ApiError(res.status, extractMessage(text) || `API error ${res.status} for ${path}`);
+  }
+  return res.json();
+}
+
 async function send<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
+  const res = await withRetry(path, () =>
+    fetch(`${BASE_URL}${path}`, {
+      method,
+      credentials: "include", // auth POSTs set/read the cookie; cross-origin needs this to store it
+      headers: { "Content-Type": "application/json", ...authHeaders() },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    }));
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new ApiError(res.status, extractMessage(text) || `API error ${res.status}`);
@@ -76,20 +131,24 @@ async function send<T>(method: string, path: string, body?: unknown): Promise<T>
   return res.json();
 }
 
-const post = <T,>(path: string, body: unknown): Promise<T> => send<T>("POST", path, body);
+const post = <T,>(path: string, body?: unknown): Promise<T> => send<T>("POST", path, body);
 const put = <T,>(path: string, body: unknown): Promise<T> => send<T>("PUT", path, body);
 const del = <T,>(path: string): Promise<T> => send<T>("DELETE", path);
 
 // For endpoints answering 204 — send() would choke parsing the empty body
 async function delVoid(path: string): Promise<void> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: "DELETE",
-    headers: authHeaders(),
-  });
+  const res = await withRetry(path, () =>
+    fetch(`${BASE_URL}${path}`, { method: "DELETE", credentials: "include", headers: authHeaders() }));
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new ApiError(res.status, extractMessage(text) || `API error ${res.status}`);
   }
+}
+
+// Applies a login/register/refresh response: parks the access token in memory.
+function applySession(auth: AuthResponse): AuthResponse {
+  setAccessToken(auth.accessToken);
+  return auth;
 }
 
 export const api = {
@@ -128,17 +187,33 @@ export const api = {
   compareBacktest: (symbol: string, days: number, topK = 10): Promise<BacktestComparisonDto> =>
     get(`/api/backtest/${encodeURIComponent(symbol)}/compare?days=${days}&topK=${topK}`),
 
-  register: (email: string, password: string): Promise<AuthResponse> =>
-    post("/api/auth/register", { email, password }),
+  register: async (email: string, password: string): Promise<AuthResponse> =>
+    applySession(await post("/api/auth/register", { email, password })),
 
-  login: (email: string, password: string): Promise<AuthResponse> =>
-    post("/api/auth/login", { email, password }),
+  login: async (email: string, password: string): Promise<AuthResponse> =>
+    applySession(await post("/api/auth/login", { email, password })),
 
-  refresh: (refreshToken: string): Promise<AuthResponse> =>
-    post("/api/auth/refresh", { refreshToken }),
+  // No body — the refresh token rides in the HttpOnly cookie. Shares the
+  // single-flight guard with the silent interceptor so the two never stampede.
+  refresh: async (): Promise<AuthResponse> => {
+    const data = await refreshAccessOnce();
+    if (!data) throw new ApiError(401, "Session expired.");
+    return data;
+  },
 
-  googleLogin: (idToken: string): Promise<AuthResponse> =>
-    post("/api/auth/google", { idToken }),
+  googleLogin: async (idToken: string): Promise<AuthResponse> =>
+    applySession(await post("/api/auth/google", { idToken })),
+
+  logout: async (): Promise<void> => {
+    // Revoke the session server-side (clears the cookie) even if it errors, then
+    // drop the in-memory token.
+    try {
+      await post("/api/auth/logout");
+    } catch {
+      // best-effort — clear locally regardless
+    }
+    setAccessToken(null);
+  },
 
   confirmEmail: (token: string): Promise<{ message: string }> =>
     post("/api/auth/confirm-email", { token }),
@@ -158,8 +233,14 @@ export const api = {
   getProfile: (): Promise<UserProfileDto> =>
     get("/api/users/me"),
 
-  changePassword: (currentPassword: string, newPassword: string): Promise<{ message: string }> =>
-    put("/api/users/me/password", { currentPassword, newPassword }),
+  // Change-password revokes every session and re-issues THIS one: a fresh cookie
+  // (set by the response) plus a new access token in the body we must adopt.
+  changePassword: async (currentPassword: string, newPassword: string): Promise<{ message: string }> => {
+    const res = await put<{ message: string; accessToken?: string }>(
+      "/api/users/me/password", { currentPassword, newPassword });
+    if (res.accessToken) setAccessToken(res.accessToken);
+    return res;
+  },
 
   deleteAccount: (): Promise<{ message: string }> =>
     del("/api/users/me"),

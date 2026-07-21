@@ -239,9 +239,9 @@ export interface BillingUrlDto {
   url: string;
 }
 
+// The refresh token is never in the body — it lives in an HttpOnly cookie.
 export interface AuthResponse {
   accessToken: string;
-  refreshToken: string;
   accessTokenExpiry: string;
   email: string;
   plan: string;
