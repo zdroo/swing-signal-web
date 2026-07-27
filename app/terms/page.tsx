@@ -107,7 +107,7 @@ export default function TermsPage() {
           <p>
             We may update these terms as the product evolves. Material changes will be announced on
             the site. Continued use after changes constitutes acceptance. Questions about these
-            terms: <a href="mailto:legal@regimedeck.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">legal@regimedeck.app</a>.
+            terms: <a href="mailto:legal@regimedeck.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">legal@regimedeck.com</a>.
             Last updated: July 2026.
           </p>
         </section>

@@ -133,8 +133,8 @@ export default function PrivacyPage() {
           <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-white">Contact</h2>
           <p>
             For any privacy request, contact us at{" "}
-            <a href="mailto:privacy@regimedeck.app" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-              privacy@regimedeck.app
+            <a href="mailto:privacy@regimedeck.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+              privacy@regimedeck.com
             </a>
             . Last updated: July 2026.
           </p>
