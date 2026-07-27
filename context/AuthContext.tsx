@@ -27,10 +27,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // The access token lives only in memory, so a reload starts logged-out until
-  // we rehydrate from the HttpOnly refresh cookie. One /auth/refresh on mount
-  // both restores the token and tells us who the user is (or that there's no
-  // session). Post-mount (not a lazy initializer) to stay SSR-hydration-safe.
+  // The access token lives only in memory, so a reload rehydrates it (and the
+  // user) via one /auth/refresh on mount. Post-mount to stay SSR-hydration-safe.
   useEffect(() => {
     // A silent-refresh failure mid-session (revoked/expired) drops us to logged-out
     setOnUnauthorized(() => setUser(null));
@@ -62,8 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
-    // Drop the UI to logged-out immediately; revoke the session + clear the
-    // cookie server-side in the background (best-effort).
+    // Drop to logged-out immediately; revoke server-side in the background (best-effort)
     setUser(null);
     void api.logout();
   }, []);

@@ -30,11 +30,9 @@ export class ApiError extends Error {
 }
 
 // ── Session state ──────────────────────────────────────────────────────
-// The access token lives ONLY in memory (a module variable), never in
-// localStorage — so an XSS payload can't read it. The long-lived refresh token
-// lives in an HttpOnly cookie the browser manages and JavaScript cannot touch.
-// On a full reload the in-memory token is gone; AuthContext rehydrates it by
-// calling refresh() (which sends the cookie) on mount.
+// Access token lives ONLY in memory (never localStorage) so XSS can't read it;
+// the long-lived refresh token is an HttpOnly cookie JS can't touch. A reload
+// loses the in-memory token — AuthContext rehydrates it via refresh() on mount.
 let accessToken: string | null = null;
 let onUnauthorized: (() => void) | null = null;
 
@@ -42,8 +40,7 @@ export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
-// AuthContext registers this so a silent refresh that ultimately fails (session
-// truly dead/revoked) drops the user to logged-out UI.
+// Called when a silent refresh ultimately fails (session dead) — drops to logged-out UI
 export function setOnUnauthorized(cb: (() => void) | null): void {
   onUnauthorized = cb;
 }
@@ -53,10 +50,9 @@ function authHeaders(): Record<string, string> {
 }
 
 // ── Silent refresh (single-flight) ─────────────────────────────────────
-// When the 1-hour access token expires, the next request 401s; we transparently
-// refresh once and retry. Many requests can 401 at once (a dashboard fires
-// several) — they must share ONE refresh, not stampede it (concurrent refreshes
-// would rotate each other's tokens and trip server-side reuse detection).
+// On a 401 we refresh once and retry. A burst of simultaneous 401s must share
+// ONE refresh — concurrent refreshes would rotate each other and trip the
+// server's reuse detection.
 let refreshInFlight: Promise<AuthResponse | null> | null = null;
 
 function refreshAccessOnce(): Promise<AuthResponse | null> {
@@ -78,9 +74,8 @@ function refreshAccessOnce(): Promise<AuthResponse | null> {
   return refreshInFlight;
 }
 
-// Runs a request; on a 401 (for anything but the auth endpoints themselves)
-// refreshes once and retries. doFetch is a thunk so the retry re-reads the
-// freshly-rotated access token. No refresh loop: /api/auth/* is exempt.
+// On a 401 (except the auth endpoints themselves — no loop), refresh once and
+// retry. doFetch is a thunk so the retry re-reads the rotated token.
 async function withRetry(path: string, doFetch: () => Promise<Response>): Promise<Response> {
   let res = await doFetch();
   if (res.status === 401 && !path.startsWith("/api/auth/")) {
@@ -105,8 +100,8 @@ function extractMessage(text: string): string {
 }
 
 async function get<T>(path: string): Promise<T> {
-  // GETs don't need the cookie (Bearer covers auth; the cookie is scoped to
-  // /api/auth), so no credentials here — keeps Next's data cache eligible.
+  // No credentials on GETs (Bearer covers auth; the cookie is /api/auth-scoped) —
+  // keeps Next's data cache eligible.
   const res = await withRetry(path, () =>
     fetch(`${BASE_URL}${path}`, { next: { revalidate: 300 }, headers: authHeaders() }));
   if (!res.ok) {

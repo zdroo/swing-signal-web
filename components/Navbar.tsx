@@ -9,8 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { PRO_ENABLED } from "@/lib/features";
 
-// Journey order: act (Dashboard) → track (Watchlist) → watch (Live Macro)
-// → learn → look up
+// Journey order: act → track → watch → learn → look up
 const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/screener", label: "Screener" },
@@ -26,9 +25,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  // Watchlist is Pro: while the dark-launch flag is off only Pro accounts
-  // see the tab at all; once Pro is live everyone does (Free gets the pitch)
-  // Watchlist tab sits after Screener; Pro-only while the flag is dark
+  // Watchlist tab (after Screener) is Pro-only while the dark-launch flag is off
   const links = user?.plan === "Pro" || PRO_ENABLED
     ? [LINKS[0], LINKS[1], { href: "/watchlist", label: "Watchlist" }, ...LINKS.slice(2)]
     : LINKS;

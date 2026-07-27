@@ -7,11 +7,9 @@ import type { ReactNode } from "react";
 const BALLOON_MAX_WIDTH = 320;
 const VIEWPORT_MARGIN = 8;
 
-// Info balloon that works for every input type: hover on mouse, tap on touch
-// (tap again / outside / Escape closes). The balloon is position:fixed and
-// clamped to the viewport, so it also survives overflow-x scroll containers.
-// A custom `trigger` turns any element (a table chip, a badge) into the
-// tappable info surface; default is the ℹ icon.
+// Info balloon for every input type: hover on mouse, tap on touch (tap again /
+// outside / Escape closes). position:fixed + viewport-clamped, so it survives
+// overflow-x scroll containers. Optional `trigger` replaces the default ℹ icon.
 export function InfoTip({
   children,
   align = "center",
@@ -90,7 +88,7 @@ export function InfoTip({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          // Mouse users already have hover; click-toggle is for touch/pen
+          // Click-toggle is for touch/pen; mouse already has hover
           if (lastPointerType.current !== "mouse") {
             if (open) setOpen(false);
             else show();
