@@ -192,6 +192,57 @@ export interface LiquidityDashboardDto {
   note: string;
 }
 
+export interface HoldingXrayDto {
+  symbol: string;
+  name: string;
+  assetClass: string;
+  posture: string; // "Risk-on" | "Defensive"
+  weightPct: number;
+  medianReturn3M: number;
+  worstReturn3M: number;
+  volatilityPct: number | null;
+  liquidityBeta: number | null;
+}
+
+export interface AssetClassWeightDto {
+  assetClass: string;
+  weightPct: number;
+}
+
+export interface ConcentrationDto {
+  topWeightPct: number;
+  top3Pct: number;
+  hhi: number;
+  label: string; // "Diversified" | "Moderate" | "Concentrated"
+  byClass: AssetClassWeightDto[];
+}
+
+export interface ExposureDto {
+  riskOnPct: number;
+  defensivePct: number;
+  liquidityBeta: number;
+  liquidityLabel: string;
+}
+
+export interface PortfolioOutcomeDto {
+  analogs: number;
+  confidence: string; // "Very low" | "Low" | "Modest"
+  positiveOddsPct: number;
+  medianReturn: number;
+  worstReturn: number;
+  bestReturn: number;
+}
+
+export interface PortfolioXrayDto {
+  regimeSummary: string;
+  holdings: HoldingXrayDto[];
+  concentration: ConcentrationDto;
+  exposure: ExposureDto;
+  outcome: PortfolioOutcomeDto;
+  reads: string[];
+  note: string;
+}
+
 export interface OddsForPeriodDto {
   totalCases: number;
   positiveCases: number;

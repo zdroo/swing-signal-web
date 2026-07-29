@@ -9,6 +9,7 @@ import type {
   MacroRegimeDto,
   RegimePlaybookBoardDto,
   LiquidityDashboardDto,
+  PortfolioXrayDto,
   PopularAssetDto,
   BillingUrlDto,
   ScreenerResultDto,
@@ -159,6 +160,9 @@ export const api = {
 
   getLiquidity: (): Promise<LiquidityDashboardDto> =>
     get("/api/liquidity"),
+
+  getPortfolioXray: (holdings: { symbol: string; value: number }[]): Promise<PortfolioXrayDto> =>
+    post("/api/portfolio/xray", { holdings }),
 
   getAssetOdds: (symbol: string, meta?: { q?: string; src?: string }): Promise<AssetOddsDto> => {
     const params = new URLSearchParams();
