@@ -124,11 +124,72 @@ export interface MacroRegimeDto {
   asOf: string;
 }
 
+export interface RegimePlaybookDto {
+  id: string;
+  name: string;
+  summary: string;
+  hallmarks: string[];
+  healthScore: number;
+  healthLabel: string;
+  playbook: PlaybookDto;
+  isCurrent: boolean;
+  matchScore: number; // 0-100 closeness of today's readings to this regime
+}
+
+export interface RegimePlaybookBoardDto {
+  regimes: RegimePlaybookDto[];
+  currentRegimeId: string | null;
+  runnerUpRegimeId: string | null;
+  note: string;
+}
+
 export interface HistoricalMatchDto {
   date: string;
   similarityScore: number;
   topPercent: number;
   indicatorValues: Record<string, number>;
+}
+
+export interface LiquidityReadingDto {
+  name: string;
+  value: number;
+  unit: string; // "$T" | "index"
+  changePct3M: number;
+  trend: string;
+  tone: string; // "good" | "bad" | "neutral"
+  plain: string;
+}
+
+export interface LiquidityComponentDto {
+  name: string;
+  valueUsdTrillions: number;
+  sharePct: number;
+}
+
+export interface LiquidityPointDto {
+  date: string;
+  globalLiquidity: number;
+  fedNetLiquidity: number;
+  btc: number | null;
+  spy: number | null;
+}
+
+export interface LiquidityOverlayDto {
+  symbol: string;
+  correlationPct: number;
+  months: number;
+}
+
+export interface LiquidityDashboardDto {
+  asOf: string;
+  globalLiquidity: LiquidityReadingDto;
+  fedNetLiquidity: LiquidityReadingDto;
+  components: LiquidityComponentDto[];
+  usM2: LiquidityReadingDto;
+  dollar: LiquidityReadingDto;
+  series: LiquidityPointDto[];
+  overlays: LiquidityOverlayDto[];
+  note: string;
 }
 
 export interface OddsForPeriodDto {
@@ -139,9 +200,6 @@ export interface OddsForPeriodDto {
   medianReturn: number;
   bestCase: number;
   worstCase: number;
-  priceTargetLow: number | null;
-  priceTargetMid: number | null;
-  priceTargetHigh: number | null;
   baseRate: number | null;
   edge: number;
 }
@@ -174,16 +232,6 @@ export interface AssetOddsDto {
   disclaimer: string;
   breakdown: AnalogBreakdownDto | null;
   tradeRead: TradeReadDto | null;
-}
-
-export interface AssetPeriodOddsDto {
-  symbol: string;
-  name: string;
-  days: number;
-  matchesUsed: number;
-  currentPrice: number | null;
-  odds: OddsForPeriodDto;
-  disclaimer: string;
 }
 
 export interface BacktestBucketDto {

@@ -9,14 +9,15 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { PRO_ENABLED } from "@/lib/features";
 
-// Journey order: act → track → watch → learn → look up
+// Journey order: act → track → context → learn.
+// Sector rotation now lives inside the Screener; the dictionary inside Learn.
 const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/screener", label: "Screener" },
-  { href: "/sectors", label: "Sectors" },
+  { href: "/playbook", label: "Playbook" },
+  { href: "/liquidity", label: "Liquidity" },
   { href: "/macro", label: "Live Macro" },
   { href: "/indicators", label: "Learn" },
-  { href: "/glossary", label: "Dictionary" },
 ];
 
 export function Navbar() {

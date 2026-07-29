@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { FAMILIES, INDICATORS, COMBOS, MOST_WATCHED, getIndicator } from "@/lib/indicators";
 import { AnchorExpander } from "@/components/AnchorExpander";
-import { ArrowRight, BookOpen, ChevronDown, Layers, Star } from "lucide-react";
+import { GlossaryList } from "@/components/GlossaryList";
+import { ArrowRight, BookOpen, ChevronDown, GraduationCap, Layers, Star } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Understanding Macro Indicators",
@@ -64,14 +65,14 @@ export default function IndicatorsPage() {
           the important combinations read together.
         </p>
         <p className="mt-3 text-sm text-zinc-500">
-          New to investing? Start with the{" "}
-          <Link
-            href="/glossary"
+          New to investing? Jump to the{" "}
+          <a
+            href="#dictionary"
             className="font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300"
           >
             plain-language dictionary
-          </Link>{" "}
-          — terms like yield, bond, and inflation explained simply.
+          </a>{" "}
+          below — terms like yield, bond, and inflation explained simply.
         </p>
       </div>
 
@@ -142,6 +143,19 @@ export default function IndicatorsPage() {
                 </a>
               ))}
             </div>
+          </div>
+
+          {/* Plain-language dictionary shortcut */}
+          <div>
+            <a
+              href="#dictionary"
+              className="mb-2 block text-sm font-semibold text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400"
+            >
+              Plain-Language Dictionary
+            </a>
+            <p className="text-xs leading-relaxed text-zinc-500">
+              Every finance term you&apos;ll meet here, explained simply.
+            </p>
           </div>
         </div>
       </nav>
@@ -229,7 +243,21 @@ export default function IndicatorsPage() {
         </div>
       </details>
 
-      <div className="pb-8 text-center">
+      {/* Plain-language dictionary — merged in from the old /glossary page */}
+      <section id="dictionary" className="scroll-mt-20 pt-4">
+        <div className="mb-6 flex items-center gap-3">
+          <GraduationCap className="h-6 w-6 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <div>
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Plain-Language Dictionary</h2>
+            <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              Every term you&apos;ll run into here, in normal language — no finance degree required.
+            </p>
+          </div>
+        </div>
+        <GlossaryList />
+      </section>
+
+      <div className="pb-8 pt-12 text-center">
         <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
           Now see what these indicators say about today.
         </p>

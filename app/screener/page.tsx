@@ -6,10 +6,12 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { PRO_ENABLED } from "@/lib/features";
 import { ScreenerTable } from "@/components/ScreenerTable";
+import { SectorHeatmap } from "@/components/SectorHeatmap";
 import { ProWaitlist } from "@/components/ProWaitlist";
 import { UpgradePanel } from "@/components/UpgradePanel";
-import type { ScreenerResultDto } from "@/types";
-import { Loader2, Radar, Lock } from "lucide-react";
+import { InfoTip } from "@/components/InfoTip";
+import type { ScreenerResultDto, SectorRotationResultDto } from "@/types";
+import { Loader2, Radar, Lock, Grid3x3 } from "lucide-react";
 
 const STANCES = ["Long bias", "No edge", "Stand aside"];
 const MARKETS = ["Crypto", "Index", "Stock", "Commodity", "Forex"];
@@ -20,6 +22,7 @@ export default function ScreenerPage() {
 
   const [result, setResult] = useState<ScreenerResultDto | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sectors, setSectors] = useState<SectorRotationResultDto | null>(null);
   const [stance, setStance] = useState("");
   const [market, setMarket] = useState("");
 
@@ -61,6 +64,16 @@ export default function ScreenerPage() {
       cancelled = true;
     };
   }, [authLoading, isPro, stance, market, requestKey]);
+
+  // Sector rotation is independent of the screener filters — fetch once. It's
+  // enrichment, so a failure just hides the section rather than erroring.
+  useEffect(() => {
+    let cancelled = false;
+    api.getSectors().then((r) => !cancelled && setSectors(r)).catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
@@ -151,6 +164,54 @@ export default function ScreenerPage() {
           </p>
         </>
       ) : null}
+
+      {/* Sector rotation — the same regime edge, aggregated to the 11 S&P sectors */}
+      {sectors && sectors.sectors.length > 0 && (
+        <section className="space-y-4 border-t border-zinc-200 dark:border-zinc-800 pt-8">
+          <div>
+            <h2 className="flex items-center gap-2 text-xl font-bold text-zinc-900 dark:text-white">
+              <Grid3x3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              Sector Rotation
+            </h2>
+            <p className="mt-1 text-sm text-zinc-500">
+              The same regime edge, aggregated to the 11 S&amp;P sectors — which the macro regime favors,
+              and which are actually leading the market right now.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-x-6 gap-y-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 text-xs text-zinc-600 dark:text-zinc-400">
+            <span className="inline-flex items-center gap-1">
+              <span className="font-semibold text-zinc-900 dark:text-white">Regime edge</span>
+              <InfoTip align="left">
+                How many percentage points the current macro regime adds to the sector ETF&apos;s
+                3-month odds versus its all-time base rate. Tiles are tinted by this — green means the
+                regime favors the sector, red a headwind. The same edge as on every asset page.
+              </InfoTip>
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="font-semibold text-zinc-900 dark:text-white">Relative strength</span>
+              <InfoTip align="left">
+                The sector&apos;s ~3-month return minus the broad market&apos;s (SPY): positive means it&apos;s
+                outpacing the market (money rotating in), negative means it&apos;s lagging even if it still
+                rose. Where money is actually moving — separate from the macro regime.
+              </InfoTip>
+            </span>
+          </div>
+
+          <SectorHeatmap sectors={sectors.sectors} benchmark={sectors.benchmark} />
+
+          {sectors.asOf && (
+            <p className="text-xs text-zinc-500">
+              As of{" "}
+              {new Date(sectors.asOf).toLocaleString("en-US", {
+                month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+              })}
+              {" · "}
+              regime edge from the same engine as each asset page — descriptive, not a prediction.
+            </p>
+          )}
+        </section>
+      )}
 
       <Link
         href="/macro"

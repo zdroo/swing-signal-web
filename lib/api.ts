@@ -1,13 +1,14 @@
 import type {
   AssetDto,
   AssetOddsDto,
-  AssetPeriodOddsDto,
   AuthResponse,
   BacktestComparisonDto,
   BacktestResultDto,
   CandleDto,
   HistoricalMatchDto,
   MacroRegimeDto,
+  RegimePlaybookBoardDto,
+  LiquidityDashboardDto,
   PopularAssetDto,
   BillingUrlDto,
   ScreenerResultDto,
@@ -153,6 +154,12 @@ export const api = {
   getHistoricalMatches: (topK = 10): Promise<HistoricalMatchDto[]> =>
     get(`/api/regime/matches?topK=${topK}`),
 
+  getRegimePlaybooks: (): Promise<RegimePlaybookBoardDto> =>
+    get("/api/regime/playbooks"),
+
+  getLiquidity: (): Promise<LiquidityDashboardDto> =>
+    get("/api/liquidity"),
+
   getAssetOdds: (symbol: string, meta?: { q?: string; src?: string }): Promise<AssetOddsDto> => {
     const params = new URLSearchParams();
     if (meta?.q) params.set("q", meta.q);
@@ -160,9 +167,6 @@ export const api = {
     const query = params.toString();
     return get(`/api/regime/odds/${encodeURIComponent(symbol)}${query ? `?${query}` : ""}`);
   },
-
-  getOddsForPeriod: (symbol: string, days: number): Promise<AssetPeriodOddsDto> =>
-    get(`/api/regime/odds/${encodeURIComponent(symbol)}/period?days=${days}`),
 
   getAssets: (): Promise<AssetDto[]> =>
     get("/api/assets"),

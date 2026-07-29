@@ -8,7 +8,7 @@ import { track } from "@/lib/analytics";
 import { useAuth } from "@/context/AuthContext";
 import { OddsTable } from "@/components/OddsTable";
 import { AssetSearch } from "@/components/AssetSearch";
-import { PeriodPredictor } from "@/components/PeriodPredictor";
+import { ConfidenceRisk } from "@/components/ConfidenceRisk";
 import { AnalogContext } from "@/components/AnalogContext";
 import { BacktestPanel } from "@/components/BacktestPanel";
 import { PriceChart } from "@/components/PriceChart";
@@ -18,77 +18,8 @@ import { AccuracyTrustLine } from "@/components/AccuracyTrustLine";
 import { ProWaitlist } from "@/components/ProWaitlist";
 import { InfoTip } from "@/components/InfoTip";
 import { AlertCircle, ArrowLeft, Info, Loader2, Lock } from "lucide-react";
-import type { AssetOddsDto, OddsForPeriodDto } from "@/types";
+import type { AssetOddsDto } from "@/types";
 import { formatPrice } from "@/lib/format";
-
-function PriceTargetCard({
-  label,
-  price,
-  currentPrice,
-  symbol,
-}: {
-  label: string;
-  price: number | null;
-  currentPrice: number | null;
-  symbol: string;
-}) {
-  if (price === null || currentPrice === null) return null;
-  const pct = ((price - currentPrice) / currentPrice) * 100;
-
-  return (
-    <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4">
-      <div className="text-xs text-zinc-500 mb-1">{label}</div>
-      <div className="text-xl font-bold text-zinc-900 dark:text-white">{formatPrice(price, symbol)}</div>
-      <div className={`text-sm mt-0.5 ${pct >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
-        {pct >= 0 ? "+" : ""}{pct.toFixed(1)}% from current
-      </div>
-    </div>
-  );
-}
-
-function PeriodTargets({
-  label,
-  period,
-  currentPrice,
-  symbol,
-}: {
-  label: string;
-  period: OddsForPeriodDto;
-  currentPrice: number | null;
-  symbol: string;
-}) {
-  if (period.totalCases === 0) return null;
-
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{label}</h3>
-        <span
-          className={`text-sm font-medium ${
-            period.positiveOdds >= 65
-              ? "text-emerald-600 dark:text-emerald-400"
-              : period.positiveOdds >= 50
-              ? "text-zinc-700 dark:text-zinc-300"
-              : "text-red-600 dark:text-red-400"
-          }`}
-        >
-          {period.positiveOdds.toFixed(0)}% chance of positive move
-          {period.baseRate !== null && (
-            <span className="ml-2 text-xs text-zinc-500">
-              (base {period.baseRate.toFixed(0)}%, edge {period.edge >= 0 ? "+" : ""}
-              {period.edge.toFixed(1)}pp)
-            </span>
-          )}
-        </span>
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <PriceTargetCard label="Conservative (P25)" price={period.priceTargetLow} currentPrice={currentPrice} symbol={symbol} />
-        <PriceTargetCard label="Base Case (P50)" price={period.priceTargetMid} currentPrice={currentPrice} symbol={symbol} />
-        <PriceTargetCard label="Optimistic (P75)" price={period.priceTargetHigh} currentPrice={currentPrice} symbol={symbol} />
-      </div>
-    </div>
-  );
-}
 
 function SignupGate({ symbol }: { symbol: string }) {
   return (
@@ -98,8 +29,8 @@ function SignupGate({ symbol }: { symbol: string }) {
         {symbol} analysis is an account feature
       </h2>
       <p className="mx-auto mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
-        BTC, SPY and Gold are free without an account. To analyze any other symbol —
-        plus custom prediction windows — create a free account. Takes 20 seconds.
+        BTC, SPY and Gold are free without an account. To analyze any other symbol,
+        create a free account. Takes 20 seconds.
       </p>
       <Link
         href={`/auth?returnTo=${encodeURIComponent(`/odds/${symbol}`)}`}
@@ -241,6 +172,9 @@ export default function OddsPage() {
           {/* The takeaway first: what the analog statistics support right now */}
           {odds.tradeRead && <TradeReadCard read={odds.tradeRead} />}
 
+          {/* Confidence + downside before any odds — leans and risk, not forecasts */}
+          <ConfidenceRisk matchesUsed={odds.matchesUsed} threeMonth={odds.threeMonths} symbol={odds.symbol} />
+
           {/* Trust at the point of decision — points to the backtest below */}
           <AccuracyTrustLine matchesUsed={odds.matchesUsed} />
 
@@ -252,37 +186,18 @@ export default function OddsPage() {
 
           {odds.breakdown && <AnalogContext breakdown={odds.breakdown} symbol={odds.symbol} />}
 
-          <PeriodPredictor symbol={odds.symbol} />
-
           <div id="backtest" className="scroll-mt-20">
             <BacktestPanel symbol={odds.symbol} />
           </div>
 
-          <section className="space-y-6">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-white">
-              Standard Outlooks
-              <InfoTip align="left">
-                <span className="block">
-                  Where this price historically landed after periods like today.{" "}
-                  <span className="font-medium text-zinc-900 dark:text-white">Base Case</span> is the
-                  middle outcome — half of history did better, half did worse.
-                </span>
-                <span className="mt-1.5 block">
-                  <span className="font-medium text-zinc-900 dark:text-white">Conservative</span> and{" "}
-                  <span className="font-medium text-zinc-900 dark:text-white">Optimistic</span> frame
-                  the typical range, not the extremes — 1 in 4 cases ended below Conservative, 1 in 4
-                  above Optimistic. A wide range means history disagrees; read it as a range, not a
-                  target.
-                </span>
-              </InfoTip>
-            </h2>
-            <PeriodTargets label="1-Month Outlook" period={odds.oneMonth} currentPrice={odds.currentPrice} symbol={symbol} />
-            <PeriodTargets label="3-Month Outlook" period={odds.threeMonths} currentPrice={odds.currentPrice} symbol={symbol} />
-            <PeriodTargets label="6-Month Outlook" period={odds.sixMonths} currentPrice={odds.currentPrice} symbol={symbol} />
-          </section>
-
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">Detailed Statistics</h2>
+            <h2 className="mb-1 text-lg font-semibold text-zinc-900 dark:text-white">
+              How {odds.name || symbol} behaved when the macro looked like today
+            </h2>
+            <p className="mb-3 text-sm text-zinc-500">
+              Odds, returns and the outcome range across the analog periods — descriptive statistics,
+              not price targets. Read the Worst Case row as your realistic downside.
+            </p>
             <OddsTable odds={odds} />
           </section>
 
