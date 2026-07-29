@@ -243,6 +243,23 @@ export interface PortfolioXrayDto {
   note: string;
 }
 
+export interface AlertConditionDto {
+  type: string;      // "MacroIndicator" | "AssetPrice" | "MovingAverage" | "VolumeSpike"
+  subject: string;
+  operator: string;  // "Above" | "Below"
+  threshold: number;
+  param: number;
+}
+
+export interface AlertRuleDto {
+  id: string;
+  name: string;
+  enabled: boolean;
+  conditions: AlertConditionDto[];
+  lastTriggeredAt: string | null;
+  summary: string;
+}
+
 export interface OddsForPeriodDto {
   totalCases: number;
   positiveCases: number;

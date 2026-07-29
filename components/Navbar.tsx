@@ -15,6 +15,7 @@ const LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/screener", label: "Screener" },
   { href: "/portfolio", label: "Portfolio" },
+  { href: "/alerts", label: "Alerts" },
   { href: "/playbook", label: "Playbook" },
   { href: "/liquidity", label: "Liquidity" },
   { href: "/macro", label: "Live Macro" },

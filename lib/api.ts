@@ -10,6 +10,8 @@ import type {
   RegimePlaybookBoardDto,
   LiquidityDashboardDto,
   PortfolioXrayDto,
+  AlertConditionDto,
+  AlertRuleDto,
   PopularAssetDto,
   BillingUrlDto,
   ScreenerResultDto,
@@ -163,6 +165,20 @@ export const api = {
 
   getPortfolioXray: (holdings: { symbol: string; value: number }[]): Promise<PortfolioXrayDto> =>
     post("/api/portfolio/xray", { holdings }),
+
+  getAlertRules: (): Promise<AlertRuleDto[]> =>
+    get("/api/alerts/rules"),
+
+  createAlertRule: (name: string, conditions: AlertConditionDto[]): Promise<AlertRuleDto> =>
+    post("/api/alerts/rules", { name, conditions }),
+
+  updateAlertRule: (
+    id: string,
+    patch: { name?: string; enabled?: boolean; conditions?: AlertConditionDto[] },
+  ): Promise<AlertRuleDto> => put(`/api/alerts/rules/${id}`, patch),
+
+  deleteAlertRule: (id: string): Promise<void> =>
+    delVoid(`/api/alerts/rules/${id}`),
 
   getAssetOdds: (symbol: string, meta?: { q?: string; src?: string }): Promise<AssetOddsDto> => {
     const params = new URLSearchParams();
