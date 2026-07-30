@@ -5,13 +5,14 @@ import userEvent from "@testing-library/user-event";
 import type { PortfolioXrayDto } from "@/types";
 import PortfolioPage from "./page";
 
-const { getPortfolioXray, useAuthMock } = vi.hoisted(() => ({
+const { getPortfolioXray, searchSymbols, useAuthMock } = vi.hoisted(() => ({
   getPortfolioXray: vi.fn(),
+  searchSymbols: vi.fn().mockResolvedValue([]),
   useAuthMock: vi.fn(),
 }));
 vi.mock("@/lib/api", async () => {
   const actual = await vi.importActual<typeof import("@/lib/api")>("@/lib/api");
-  return { ...actual, api: { getPortfolioXray } };
+  return { ...actual, api: { getPortfolioXray, searchSymbols } };
 });
 vi.mock("@/context/AuthContext", () => ({ useAuth: useAuthMock }));
 vi.mock("next/link", () => ({

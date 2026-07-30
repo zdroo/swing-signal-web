@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { InfoTip } from "@/components/InfoTip";
+import { SymbolAutocomplete } from "@/components/SymbolAutocomplete";
 import type { HoldingXrayDto, PortfolioXrayDto } from "@/types";
 import { ArrowLeft, Lock, Loader2, Plus, Scan, Trash2 } from "lucide-react";
 
@@ -119,12 +120,14 @@ export default function PortfolioPage() {
             <div className="mt-3 space-y-2">
               {rows.map((r, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <input
-                    value={r.symbol}
-                    onChange={(e) => setRow(i, { symbol: e.target.value })}
-                    placeholder="Ticker"
-                    className="w-40 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-1.5 text-sm uppercase text-zinc-900 dark:text-white placeholder:normal-case placeholder:text-zinc-400"
-                  />
+                  <div className="w-44 shrink-0">
+                    <SymbolAutocomplete
+                      value={r.symbol}
+                      onChange={(v) => setRow(i, { symbol: v })}
+                      placeholder="Ticker"
+                      className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-1.5 text-sm uppercase text-zinc-900 dark:text-white placeholder:normal-case placeholder:text-zinc-400"
+                    />
+                  </div>
                   <div className="relative flex-1">
                     <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">$</span>
                     <input

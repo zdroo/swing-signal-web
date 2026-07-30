@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { OddsTable } from "@/components/OddsTable";
 import { AssetSearch } from "@/components/AssetSearch";
 import { ConfidenceRisk } from "@/components/ConfidenceRisk";
+import { PositionSizer } from "@/components/PositionSizer";
 import { AnalogContext } from "@/components/AnalogContext";
 import { BacktestPanel } from "@/components/BacktestPanel";
 import { PriceChart } from "@/components/PriceChart";
@@ -174,6 +175,9 @@ export default function OddsPage() {
 
           {/* Confidence + downside before any odds — leans and risk, not forecasts */}
           <ConfidenceRisk matchesUsed={odds.matchesUsed} threeMonth={odds.threeMonths} symbol={odds.symbol} />
+
+          {/* Turn the downside into a position size */}
+          <PositionSizer odds={odds} />
 
           {/* Trust at the point of decision — points to the backtest below */}
           <AccuracyTrustLine matchesUsed={odds.matchesUsed} />
