@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
@@ -12,7 +12,28 @@ import {
   UserCircle, Loader2, MailCheck, MailWarning, KeyRound, Trash2, Check, CreditCard, Sparkles,
 } from "lucide-react";
 
+// The spinner this page already shows while auth resolves, reused as the
+// Suspense fallback so the boundary is invisible to the user.
+function AccountFallback() {
+  return (
+    <div className="flex justify-center py-24">
+      <Loader2 className="h-6 w-6 animate-spin text-zinc-600" />
+    </div>
+  );
+}
+
+// useSearchParams opts the tree into client-side rendering, and a prerendered
+// route needs a Suspense boundary above it or the build fails. Nothing here is
+// prerenderable anyway — the whole page is behind auth.
 export default function AccountPage() {
+  return (
+    <Suspense fallback={<AccountFallback />}>
+      <AccountPageContent />
+    </Suspense>
+  );
+}
+
+function AccountPageContent() {
   const { user, loading: authLoading, logout, refreshSession } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -161,13 +182,7 @@ export default function AccountPage() {
     }
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="flex justify-center py-24">
-        <Loader2 className="h-6 w-6 animate-spin text-zinc-600" />
-      </div>
-    );
-  }
+  if (authLoading || loading) return <AccountFallback />;
 
   if (!profile) {
     return (
